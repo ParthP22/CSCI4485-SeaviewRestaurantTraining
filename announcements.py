@@ -161,6 +161,8 @@
 #     gmail_send_message()
 
 import smtplib
+from urllib import request
+
 import mailtrap
 
 # def send_mail():
@@ -191,31 +193,50 @@ import mailtrap
 
 
 import smtplib, ssl, sqlite3
-def send_mail():
-    port = 587
-    smtp_server = "smtp.office365.com"
-    sender_email = "seaviewrestauranttraining1@outlook.com"
-    password = "seaviewrestaurant1"
-    receiver_email = "parthpatel0422@gmail.com"
-    message = """Subject: SMTP Test\n
-    
-    This email was sent from Python."""
+# import app as main
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()
-        server.starttls(context=context)
-        server.ehlo()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, message)
+conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
+app = Flask(__name__)
+
+def send_mail(subject, body):
+        cursor = conn.cursor()
+        cursor.execute('SELECT Email FROM Users')
+        receiver_emails = cursor.fetchall()
+        port = 587
+        smtp_server = "smtp.office365.com"
+        sender_email = "seaviewrestauranttraining1@outlook.com"
+        password = "seaviewrestaurant1"
+        message = f"""Subject: {subject}\n
+        
+        {body}"""
+
+        context = ssl.create_default_context()
+        for receiver_email in receiver_emails:
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.ehlo()
+                server.starttls(context=context)
+                server.ehlo()
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, message)
         print("Email sent successfully")
 
-
+@app.route('/', methods=['GET','POST'])
 def announcements():
+    status = "Enter your email"
+    if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
 
-    pass
+        subject = request.form['subject']
+        body = request.form['body']
+        send_mail(subject, body)
+        status = "Email sent successfully"
+        # return redirect(url_for('announcements'))
+        return render_template('announcements.html', status=status)
+
+    else:
+        return render_template('announcements.html', status=status)
 
 
 if __name__ == "__main__":
-    # send_mail()
-    pass
+    app.run(debug=True)
+
