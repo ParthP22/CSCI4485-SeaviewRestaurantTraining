@@ -199,31 +199,99 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
 app = Flask(__name__)
 
+# def send_mail(subject, body, receiver_emails):
+#
+#     port = 587
+#     smtp_server = "smtp.office365.com"
+#     sender_email = "seaviewrestauranttraining1@outlook.com"
+#     password = "seaviewrestaurant1"
+#     message = f"""Subject: {subject}\n
+#
+#     {body}"""
+#
+#     context = ssl.create_default_context()
+#     for receiver_email in receiver_emails:
+#         with smtplib.SMTP(smtp_server, port) as server:
+#             server.ehlo()
+#             server.starttls(context=context)
+#             server.ehlo()
+#             server.login(sender_email, password)
+#             server.sendmail(sender_email, receiver_email, message)
+#         print(receiver_email)
+#     print("Email sent successfully")
+#
+# @app.route('/', methods=['GET','POST'])
+# def announcements():
+#     status = "Enter your email"
+#     cursor = conn.cursor()
+#     cursor.execute('SELECT ID, First_Name, Last_Name, Email FROM Users')
+#     employees = cursor.fetchall()
+#     recipients = []
+#     for employee in employees:
+#         recipient = {
+#             'id' : employee[0],
+#             'first_name' : employee[1],
+#             'last_name' : employee[2]
+#         }
+#         recipients.append(recipient)
+#     receiver_emails = []
+#
+#     if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
+#
+#         subject = request.form['subject']
+#         body = request.form['body']
+#         # print(receiver_emails)
+#         send_mail(subject, body, receiver_emails)
+#         status = "Email sent successfully"
+#         receiver_emails.clear()
+#
+#         # return redirect(url_for('announcements'))
+#         return render_template('announcements.html', status=status)
+#     elif request.method == 'POST':
+#         selected_recipients = request.form.getlist('recipients')
+#         print(request.form['recipients'])
+#         for recipient in selected_recipients:
+#             receiver_emails.append(recipient)
+#
+#         print(receiver_emails)
+#
+#     else:
+#         return render_template('announcements.html', status=status, recipients=recipients)
+
+import smtplib, ssl, sqlite3
+# import app as main
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+
+conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
+app = Flask(__name__)
+
+
 def send_mail(subject, body):
-        cursor = conn.cursor()
-        cursor.execute('SELECT Email FROM Users')
-        receiver_emails = cursor.fetchall()
-        port = 587
-        smtp_server = "smtp.office365.com"
-        sender_email = "seaviewrestauranttraining1@outlook.com"
-        password = "seaviewrestaurant1"
-        message = f"""Subject: {subject}\n
-        
+    cursor = conn.cursor()
+    cursor.execute('SELECT Email FROM Users WHERE ID >= 1 AND ID <= 4')
+    receiver_emails = cursor.fetchall()
+    port = 587
+    smtp_server = "smtp.office365.com"
+    sender_email = "seaviewrestauranttraining1@outlook.com"
+    password = "seaviewrestaurant1"
+    message = f"""Subject: {subject}\n
+
         {body}"""
 
-        context = ssl.create_default_context()
-        for receiver_email in receiver_emails:
-            with smtplib.SMTP(smtp_server, port) as server:
-                server.ehlo()
-                server.starttls(context=context)
-                server.ehlo()
-                server.login(sender_email, password)
-                server.sendmail(sender_email, receiver_email, message)
-        print("Email sent successfully")
+    context = ssl.create_default_context()
+    for receiver_email in receiver_emails:
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message)
+    print("Email sent successfully")
 
-@app.route('/', methods=['GET','POST'])
+
+@app.route('/', methods=['GET', 'POST'])
 def announcements():
-    status = "Enter your email"
+    status = "Type your message"
     if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
 
         subject = request.form['subject']

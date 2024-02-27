@@ -22,7 +22,11 @@
         <input type="text" id="subject" name="subject" required><br><br>
 
         <label for="body">Body:</label><br>
-        <textarea id="body" name="body" rows="5" cols="50" required></textarea><br><br>
+        <textarea id="body" name="body" rows="20" cols="50" required></textarea><br><br>
+
+        <!--{% for recipient in recipients %}
+            <input type="checkbox" name="recipient" value="{{ recipient.email }}">{{ recipient.first_name }} {{ recipient.last_name }}<br>
+        {% endfor %}-->
 
         <input type="submit" value="Send Email">
 
