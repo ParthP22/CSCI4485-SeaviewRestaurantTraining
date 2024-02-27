@@ -1,11 +1,11 @@
 import re
 
-from flask import Flask, render_template, redirect, url_for, session, request
-import sqlite3
+from flask import Flask, render_template, redirect, url_for, session, request, flash
+import smtplib, ssl, sqlite3
 app = Flask(__name__)
 
 def connect_db():
-    conn = sqlite3.connect("Seaview_DB.db")
+    conn = sqlite3.connect("Seaview_DB.db", check_same_thread=False)
     return conn
 
 @app.route('/')
@@ -56,17 +56,17 @@ def authenticate_user():
 
             if account[6] == 1 or account[6] == 2:
                 #Admin
-                conn.close()
+
                 return render_template('manager_dashboard.html', msg=msg)
             else:
                 #employee/basic user page
-                conn.close()
+
                 return 'Logged in successfully! Employee/Basic'
         else:
             # Account doesnt exist or username/password incorrect
             msg = 'Incorrect username/password!'
     # Show the login form with message (if any)
-    conn.close()
+
     return render_template('index.html', msg=msg)
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -116,6 +116,44 @@ def registration():
     return render_template('register.html', msg=msg)
 
 
+def send_mail(subject, body):
+    conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
+    cursor = conn.cursor()
+    cursor.execute('SELECT Email FROM Users WHERE ID >= 1 AND ID <= 4')
+    receiver_emails = cursor.fetchall()
+    port = 587
+    smtp_server = "smtp.office365.com"
+    sender_email = "seaviewrestauranttraining1@outlook.com"
+    password = "seaviewrestaurant1"
+    message = f"""Subject: {subject}\n
+
+        {body}"""
+
+    context = ssl.create_default_context()
+    for receiver_email in receiver_emails:
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()
+            server.starttls(context=context)
+            server.ehlo()
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, message)
+    print("Email sent successfully")
+
+
+@app.route('/announcements', methods=['GET', 'POST'])
+def announcements():
+    status = "Type your message"
+    if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
+
+        subject = request.form['subject']
+        body = request.form['body']
+        send_mail(subject, body)
+        status = "Email sent successfully"
+        # return redirect(url_for('announcements'))
+        return render_template('announcements.html', status=status)
+
+    else:
+        return render_template('announcements.html', status=status)
 
 
 
