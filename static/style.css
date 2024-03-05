@@ -12,7 +12,8 @@ body{
   text-align: center;
   font-family: sans-serif;
   justify-content: center;
-  background-image: url(images/bg.jpg);
+  /*background-image: url(images/bg.jpg);*/
+  background-color: #ffffff;
   background-size: cover;
   background-position: center;
 }
@@ -89,7 +90,8 @@ form .button{
   left: -100%;
   z-index: -1;
   transition: all .4s;
-  background: -webkit-linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);
+  /*background: -webkit-linear-gradient(right,#00dbde,#fc00ff,#00dbde,#fc00ff);*/
+  background: rgb(0, 123, 255);
 }
 .button:hover .inner{
   left: 0;
@@ -109,4 +111,10 @@ form .button{
   margin: 35px 0 20px 0;
   font-size: 19px;
   color: grey;
+}
+
+
+
+.logout input[type="submit"]{
+
 }
