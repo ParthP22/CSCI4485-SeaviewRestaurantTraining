@@ -1,12 +1,28 @@
 import re
+import secrets
+# import announcements
+from flask import Flask, render_template, redirect, url_for, session, request
+# from announcements import announcements
+import sqlite3, smtplib, ssl
 
-from flask import Flask, render_template, redirect, url_for, session, request, flash
-import smtplib, ssl, sqlite3
 app = Flask(__name__)
+# app.register_blueprint(announcements)
 
-def connect_db():
-    conn = sqlite3.connect("Seaview_DB.db", check_same_thread=False)
-    return conn
+
+conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
+
+
+
+def create_secret_key(length=32):
+    return secrets.token_hex(length)
+
+app.secret_key = create_secret_key()
+
+
+
+# def connect_db():
+#     conn = sqlite3.connect("Seaview_DB.db")
+#     return conn
 
 @app.route('/')
 def Welcome():
@@ -16,10 +32,20 @@ def Welcome():
 def login():
     return render_template('index.html')
 
+@app.route('/welcome', methods=['GET', 'POST'])
+def logout():
+    session.pop('logged_in', None)
+    session.pop('username', None)
+    session.pop('password', None)
+    return render_template('welcome.html')
+
+
+
+
 @app.route('/register_employee')
 def register_employee():
 
-    conn = connect_db()
+    # conn = connect_db()
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM Roles ')
@@ -27,25 +53,26 @@ def register_employee():
 
     return render_template('register_employee.html', roles = roles)
 
-
 @app.route('/manage_employee')
 def manage_employee():
-    conn = connect_db()
+    # conn = connect_db()
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM Users ')
     users = cursor.fetchall()
     return render_template('manage_employee.html', users = users)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/dashboard', methods=['GET', 'POST'])
 def authenticate_user():
     msg = ''
     # Check if "username" and "password" POST requests exist (user submitted form)
+    if 'logged_in' in session:
+        return render_template('manager_dashboard.html', msg=msg)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
-        conn = connect_db()
+        # conn = connect_db()
         cursor = conn.cursor()
         # Check if account exists using MySQL
         cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (username, password,))
@@ -53,20 +80,22 @@ def authenticate_user():
         account = cursor.fetchone()
         # If account exists in accounts table in out database
         if account:
-
             if account[6] == 1 or account[6] == 2:
                 #Admin
-
+                # conn.close()
+                session['logged_in'] = True
+                session['username'] = username
+                session['password'] = password
                 return render_template('manager_dashboard.html', msg=msg)
             else:
                 #employee/basic user page
-
+                # conn.close()
                 return 'Logged in successfully! Employee/Basic'
         else:
             # Account doesnt exist or username/password incorrect
             msg = 'Incorrect username/password!'
     # Show the login form with message (if any)
-
+    # conn.close()
     return render_template('index.html', msg=msg)
 
 @app.route('/registration', methods=['GET', 'POST'])
@@ -84,7 +113,7 @@ def registration():
         role_id = request.form.get('role')
 
         # Check if account exists using MySQL
-        conn = connect_db()
+        # conn = connect_db()
         cursor = conn.cursor()
         cursor.execute('SELECT * FROM Users WHERE Username=?', (username,))
         account = cursor.fetchone()
@@ -113,21 +142,22 @@ def registration():
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
     # Show registration form with message (if any)
-    return render_template('register.html', msg=msg)
+    return render_template('register_employee.html', msg=msg)
+
+
+
 
 
 def send_mail(subject, body):
-    conn = sqlite3.connect("./Seaview_DB.db", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute('SELECT Email FROM Users WHERE ID >= 1 AND ID <= 4')
     receiver_emails = cursor.fetchall()
     port = 587
     smtp_server = "smtp.office365.com"
     sender_email = "seaviewrestauranttraining1@outlook.com"
-    password = "seaviewrestaurant1"
+    password = "seaviewrestaurant2/%"
     message = f"""Subject: {subject}\n
-
-        {body}"""
+{body}"""
 
     context = ssl.create_default_context()
     for receiver_email in receiver_emails:
@@ -154,6 +184,8 @@ def announcements():
 
     else:
         return render_template('announcements.html', status=status)
+
+
 
 
 

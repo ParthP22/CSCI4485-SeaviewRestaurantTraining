@@ -3,8 +3,19 @@
         <meta charset="UTF-8">
         <title> Login </title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <style>
+            .image {
+            background-image: url("{{ url_for('static', filename='images/seaviewnew.png') }}");
+            background-size: cover; /* Adjust to your needs */
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        </style>
     </head>
-    <body>
+    <body class="image">
     <div class="center">
         <div class="container">
             <div class="header">
@@ -19,7 +30,8 @@
 
                         <div class="input-field">
                             <input id="password" name="password" class="password" type="password" required>
-                            <span class="show">SHOW</span>
+<!--                            <span class="show">SHOW</span>-->
+<!--                            Note: I (Parth) commented out the line above, because we did not have a function for it for milestone 2-->
                             <label>Password</label>
                         </div>
                         <div class="button">

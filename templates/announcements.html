@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Announcements</title>
-    <!--<link ref="stylesheet" href="../static/announcements.css">-->
-    <link rel="stylesheet" href="{{ url_for('static', filename='announcements.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='AdminLte/dist/css/adminlte.css') }}">
-</head>
-<body>
-<!--<div class="announcements">
-    <h1>Announcements</h1>
-    <div class="subject">
-        <form action=""
-    </div>
-</div>-->
+{% extends "base.html" %}
+{% block title %}Announcements - Seaview Training{% endblock %}
+
+{% block content %}
+
+
 <h1>Announcements</h1>
 
-    <form action="/" method="post">
+    <form action="/announcements" method="post">
         <div>{{ status }}</div>
         <label for="subject">Subject:</label><br>
         <input type="text" id="subject" name="subject" required><br><br>
@@ -24,13 +14,11 @@
         <label for="body">Body:</label><br>
         <textarea id="body" name="body" rows="20" cols="50" required></textarea><br><br>
 
-        <!--{% for recipient in recipients %}
-            <input type="checkbox" name="recipient" value="{{ recipient.email }}">{{ recipient.first_name }} {{ recipient.last_name }}<br>
-        {% endfor %}-->
+
 
         <input type="submit" value="Send Email">
 
     </form>
 
-</body>
-</html>
+
+{% endblock %}
