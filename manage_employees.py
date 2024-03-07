@@ -5,10 +5,10 @@
 import re
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
-from __main__ import app
+from __main__ import website
 
 
-@app.route('/register_employee')
+@website.route('/register_employee')
 def register_employee():
 
     cursor = database.conn.cursor()
@@ -18,9 +18,8 @@ def register_employee():
 
     return render_template('register_employee.html', roles = roles)
 
-@app.route('/manage_employee')
+@website.route('/manage_employee')
 def manage_employee():
-    # conn = connect_db()
     cursor = database.conn.cursor()
 
     cursor.execute('SELECT * FROM Users ')
@@ -28,7 +27,7 @@ def manage_employee():
     return render_template('manage_employee.html', users = users)
 
 
-@app.route('/registration', methods=['GET', 'POST'])
+@website.route('/registration', methods=['GET', 'POST'])
 def registration():
     msg = ''
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
@@ -43,7 +42,6 @@ def registration():
         role_id = request.form.get('role')
 
         # Check if account exists using MySQL
-        # conn = connect_db()
         cursor = database.conn.cursor()
         cursor.execute('SELECT * FROM Users WHERE Username=?', (username,))
         account = cursor.fetchone()
