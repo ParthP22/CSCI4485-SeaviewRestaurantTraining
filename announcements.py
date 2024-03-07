@@ -4,7 +4,7 @@
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database, smtplib, ssl, credentials
-from __main__ import app
+from __main__ import website
 
 def send_mail(subject, body):
     cursor = database.conn.cursor()
@@ -28,7 +28,7 @@ def send_mail(subject, body):
     print("Email sent successfully")
 
 
-@app.route('/announcements', methods=['GET', 'POST'])
+@website.route('/announcements', methods=['GET', 'POST'])
 def announcements():
     status = "Type your message"
     if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:

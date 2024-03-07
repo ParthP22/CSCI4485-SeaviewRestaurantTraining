@@ -4,7 +4,7 @@
 import secrets
 from flask import Flask, render_template
 
-app = Flask(__name__)
+website = Flask(__name__)
 
 
 # Note from Parth: I know PyCharm says that these imports aren't being used,
@@ -18,14 +18,14 @@ import session_handling
 def create_secret_key(length=32):
     return secrets.token_hex(length)
 
-app.secret_key = create_secret_key()
+website.secret_key = create_secret_key()
 
 
 # This will stay in app.py
-@app.route('/')
+@website.route('/')
 def Welcome():
     return render_template('welcome.html')
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    website.run(debug=True)
