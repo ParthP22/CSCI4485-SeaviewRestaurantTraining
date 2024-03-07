@@ -3,7 +3,7 @@
 # through seaviewrestauranttraining@outlook.com on the announcements page.
 
 from flask import Flask, render_template, redirect, url_for, session, request
-import database, smtplib, ssl
+import database, smtplib, ssl, credentials
 from __main__ import app
 
 def send_mail(subject, body):
@@ -12,8 +12,8 @@ def send_mail(subject, body):
     receiver_emails = cursor.fetchall()
     port = 587
     smtp_server = "smtp.office365.com"
-    sender_email = "seaviewrestauranttraining1@outlook.com"
-    password = "seaviewrestaurant2/%"
+    sender_email = credentials.email
+    password = credentials.password
     message = f"""Subject: {subject}\n
 {body}"""
 
