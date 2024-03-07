@@ -1,3 +1,6 @@
+# Note from Parth: make sure you exclude this file whenever you push to GitHub from PyCharm.
+# We don't want any merge conflicts.
+
 import secrets
 from flask import Flask, render_template
 
