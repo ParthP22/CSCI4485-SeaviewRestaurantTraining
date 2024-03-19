@@ -12,6 +12,7 @@ website = Flask(__name__)
 import announcements
 import manage_employees
 import session_handling
+import manage_quizzes
 
 
 # This will stay in app.py
