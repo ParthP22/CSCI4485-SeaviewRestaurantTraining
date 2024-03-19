@@ -11,7 +11,11 @@ from __main__ import website
 def manage_quizzes():
     cursor = database.conn.cursor()
 
-    cursor.execute('SELECT * FROM QUIZ')
+    cursor.execute('SELECT * FROM QUIZZES')
     quizzes = cursor.fetchall()
     return render_template('manage_quizzes.html', quizzes = quizzes)
+
+@website.route('/quiz_editor')
+def quiz_editor():
+    cursor = database.conn.cursor()
 
