@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Quiz List - Seaview Training{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <h2>Quiz list</h2>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <table class="display" id="users_table" width="100%">
+        <thead>
+            <tr>
+                <th>Quiz ID</th>
+                <th>Quiz Name</th>
+                <th>Total Questions</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ quiz[0] }}</td>
+                    <td>{{ quiz[5] }}</td>
+                    <td>{{ quiz[1] }}</td>
+                    <td>Edit</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <a href="{{ url_for('register_employee') }}" class="btn btn-primary ">Register New Employee</a>
+        </tfoot>
+    </table>
+</div>
+<!-- Add home page content here -->
+{% endblock %}
+
+<script>
+    $(document).ready(function() {
+    $('#users_table').DataTable({
+
+
+    });
+});
+
+</script>
