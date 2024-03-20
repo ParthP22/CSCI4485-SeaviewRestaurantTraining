@@ -15,6 +15,7 @@ def manage_quizzes():
     quizzes = cursor.fetchall()
     return render_template('manage_quizzes.html', quizzes = quizzes)
 
+#Routes quiz list to the quiz editor
 @website.route('/quiz_editor')
 def quiz_editor():
     cursor = database.conn.cursor()
