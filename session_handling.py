@@ -1,7 +1,7 @@
 # Author(s): Pranjal Singh, Parth Patel
 # This file contains the code that handles a user's session, such as login, logout
 # and authenticating the user.
-from types import NoneType
+
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
@@ -41,7 +41,7 @@ def render_employee_dashboard(account, cursor):
     #         total_correct += progress[0]
     #         total_questions += progress[0] + progress[1]
 
-    if recent_attempts is not NoneType:
+    if recent_attempts is not None:
         for attempt in recent_attempts:
             total_correct += attempt[0]
             total_questions += attempt[0] + attempt[1]
