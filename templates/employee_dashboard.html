@@ -11,10 +11,13 @@
     </div>
     <div class="container">
         <div class="row justify-content-md-center">
-            <a href="{{ url_for('manage_employee') }}" class="btn btn-primary btn-lg btn-block">Manage Employee Accounts</a>
-            <a href="{{ url_for('manage_employee') }}" class="btn btn-primary btn-lg btn-block">Manage Quizzes</a>
+<!--            <div class="progress">-->
+<!--                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width: 100%">-->
+<!--                    {{progress}}%-->
+<!--                </div>-->
+<!--            </div>-->
+            <progress value="{{progress}}" max="{{total_questions}}"> {{progress}} </progress>
             <a href="{{ url_for('announcements') }}" class="btn btn-primary btn-lg btn-block">Announcements</a>
-             <a href="{{ url_for('manage_employee') }}" class="btn btn-primary btn-lg btn-block">History Log</a>
         </div>
     </div>
 
