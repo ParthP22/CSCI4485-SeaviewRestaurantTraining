@@ -5,7 +5,7 @@
 import re
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
-from __main__ import website
+from routes import website
 
 
 @website.route('/register_employee')
@@ -71,3 +71,13 @@ def registration():
         msg = 'Please fill out the form!'
     # Show registration form with message (if any)
     return render_template('register_employee.html', msg=msg)
+
+def delete_item(item_id):
+    cursor = database.conn.cursor()
+    cursor.execute("DELETE FROM Users WHERE id=?", (item_id,))
+    database.conn.commit()
+
+@website.route('/delete/<int:item_id>', methods=['GET'])
+def delete_route(item_id):
+    delete_item(item_id)
+    return redirect(url_for('manage_employee'))
