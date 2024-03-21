@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #007bff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
+        }
+        .question {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+        input[type="text"],
+        select {
+            width: calc(100% - 22px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Quiz</h1>
+
+        <form id="quizForm">
+            <label for="quizTitle">Quiz Title:</label><br>
+            <input type="text" id="quizTitle" name="quizTitle"><br><br>
+
+            <label for="quizDescription">Quiz Description:</label><br>
+            <textarea id="quizDescription" name="quizDescription"></textarea><br><br>
+
+            <div id="questionsContainer">
+                <!-- Questions will be dynamically added here -->
+            </div>
+
+            <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
+            <button type="submit">Create Quiz</button>
+        </form>
+    </div>
+
+    <script>
+        // Function to add a new question input field
+        function addQuestion() {
+            const questionsContainer = document.getElementById('questionsContainer');
+            const questionNumber = questionsContainer.children.length + 1;
+
+            const questionDiv = document.createElement('div');
+            questionDiv.classList.add('question');
+            questionDiv.innerHTML = `
+                <h3>Question ${questionNumber}</h3>
+                <label for="question${questionNumber}">Question:</label><br>
+                <input type="text" id="question${questionNumber}" name="question${questionNumber}"><br><br>
+
+                <label for="option${questionNumber}A">Option A:</label><br>
+                <input type="text" id="option${questionNumber}A" name="option${questionNumber}A"><br><br>
+
+                <label for="option${questionNumber}B">Option B:</label><br>
+                <input type="text" id="option${questionNumber}B" name="option${questionNumber}B"><br><br>
+
+                <label for="option${questionNumber}C">Option C:</label><br>
+                <input type="text" id="option${questionNumber}C" name="option${questionNumber}C"><br><br>
+
+                <label for="option${questionNumber}D">Option D:</label><br>
+                <input type="text" id="option${questionNumber}D" name="option${questionNumber}D"><br><br>
+
+                <label for="correctAnswer${questionNumber}">Correct Answer:</label><br>
+                <select id="correctAnswer${questionNumber}" name="correctAnswer${questionNumber}">
+                    <option value="optionA">Option A</option>
+                    <option value="optionB">Option B</option>
+                    <option value="optionC">Option C</option>
+                    <option value="optionD">Option D</option>
+                </select><br><br>
+
+                <button type="button" onclick="deleteQuestion(this)" style="background-color: #007bff;">Delete Question</button>
+            `;
+            questionsContainer.appendChild(questionDiv);
+        }
+
+        // Function to delete a question
+        function deleteQuestion(button) {
+            const questionDiv = button.parentElement;
+            questionDiv.remove();
+        }
+    </script>
+</body>
+</html>

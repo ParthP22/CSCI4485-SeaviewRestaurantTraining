@@ -44,7 +44,7 @@ def authenticate_user():
                 return render_template('manager_dashboard.html', msg=msg)
             else:
                 #employee/basic user page
-                return 'Logged in successfully! Employee/Basic'
+                return render_template('employee_dashboard.html', msg=msg)
         else:
             # Account doesnt exist or username/password incorrect
             msg = 'Incorrect username/password!'
