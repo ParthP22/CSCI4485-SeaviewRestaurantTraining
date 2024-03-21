@@ -4,7 +4,7 @@
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database, smtplib, ssl, credentials
-from __main__ import website
+from routes import website
 
 def send_mail(subject, body):
     cursor = database.conn.cursor()

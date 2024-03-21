@@ -5,7 +5,7 @@
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
-from __main__ import website
+from routes import website
 
 
 @website.route('/login')
