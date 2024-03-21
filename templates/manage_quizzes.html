@@ -9,12 +9,22 @@
         </div>
     </div>
 </div>
+    <style>
+        Style the container /
+        .message-container {
+            width: 300px; / Adjust the width as needed /
+            border: 1px solid #ccc;
+            padding: 10px;
+            white-space: pre-wrap; / Preserve white space and break lines
+        }
+    </style>
 <div class="container">
     <table class="display" id="quiz_table" width="100%">
         <thead>
             <tr>
                 <th>Quiz ID</th>
                 <th>Quiz Name</th>
+                <th>Quiz Description</th>
                 <th>Total Questions</th>
                 <th>Edit</th>
             </tr>
@@ -23,8 +33,9 @@
             {% for quiz in quizzes %}
                 <tr>
                     <td>{{ quiz[0] }}</td>
-                    <td>{{ quiz[5] }}</td>
                     <td>{{ quiz[1] }}</td>
+                    <td>{{ quiz[7] }}</td>
+                    <td>{{ quiz[2] }}</td>
                     <td>Edit</td>
                 </tr>
             {% endfor %}

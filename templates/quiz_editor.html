@@ -64,26 +64,62 @@
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+        /* Button styling */
+        .back-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        /* Same button style as the "Add Question" button */
+        .back-button button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        /* Button hover effect */
+        .back-button button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Create Quiz</h1>
 
-        <form id="quizForm">
-            <label for="quizTitle">Quiz Title:</label><br>
-            <input type="text" id="quizTitle" name="quizTitle"><br><br>
+        <form id="quizForm" action = "{{ url_for('quiz_editing') }}" method="POST">
+            <label for="quiz_name">Quiz Name:</label><br>
+            <input type="text" id="quizTitle" name="quiz_name"><br><br>
 
-            <label for="quizDescription">Quiz Description:</label><br>
-            <textarea id="quizDescription" name="quizDescription"></textarea><br><br>
+            <label for="quiz_desc">Quiz Description:</label><br>
+            <textarea id="quiz_desc" name="quiz_desc"></textarea><br><br>
 
             <div id="questionsContainer">
                 <!-- Questions will be dynamically added here -->
             </div>
 
             <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
-            <button type="submit">Create Quiz</button>
+
+            <!--
+            <select name="isVisible" class="dropdown" style="width: 390px; height: 30px">
+                <option value="0" selected>Should this be visible to employees?</option>
+                <option value="2" selected>No</option>
+                <option value="1" selected>Yes</option>
+            </select>
+            -->
+
+            <input type="submit" onclick="uploadQuiz()">Create Quiz</input>
         </form>
+    </div>
+
+    <!-- Back button -->
+    <div class="back-button">
+        <button onclick="goBack()">Go Back</button>
     </div>
 
     <script>
@@ -95,7 +131,7 @@
             const questionDiv = document.createElement('div');
             questionDiv.classList.add('question');
             questionDiv.innerHTML = `
-                <h3>Question ${questionNumber}</h3>
+
                 <label for="question${questionNumber}">Question:</label><br>
                 <input type="text" id="question${questionNumber}" name="question${questionNumber}"><br><br>
 
@@ -128,6 +164,19 @@
         function deleteQuestion(button) {
             const questionDiv = button.parentElement;
             questionDiv.remove();
+        }
+
+        // Function to upload quiz data and navigate to manage_quizzes page
+        function uploadQuiz() {
+            // Perform actions to upload quiz data to the database
+
+            // Redirect to manage_quizzes page
+            window.location.href = "manage_quizzes";
+        }
+
+        // Function to navigate back
+        function goBack() {
+            window.history.back();
         }
     </script>
 </body>
