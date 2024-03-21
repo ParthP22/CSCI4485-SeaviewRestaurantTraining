@@ -1,4 +1,4 @@
-# Author(s): Ryan Minneo
+# Author(s): Ryan Minneo, Ryan Nguyen
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
 
@@ -24,11 +24,13 @@ def quiz_editor():
 @website.route('/quiz_editing', methods=['GET', 'POST'])
 def quiz_editing():
     count = 0
-    # Check if
-    if request.method == 'POST' and 'quiz_name' in request.form and 'quiz_desc' in request.form:
+    file_data = None  # Define file_data variable outside the conditional block
+    # Check if the quiz name, quiz description, and material name is inputted into their text boxes.
+    if request.method == 'POST' and 'quiz_name' in request.form and 'quiz_desc' in request.form and 'material_name' in request.form:
         # Retrieve data from the HTML form
         quiz_name = request.form['quiz_name']
         quiz_desc = request.form['quiz_desc']
+        material_name = request.form['material_name']
 
         # Retrieve questions and answers dynamically
         questions = []
@@ -55,6 +57,19 @@ def quiz_editing():
         #                          VALUES (?, ?, ?, ?, ?, ?)''',
         #                   (question['QUESTION'], question['ANSWER_A'], question['ANSWER_B'],
          #                   question['ANSWER_C'], question['ANSWER_D'], question['CORRECT_ANSWER']))
+
+        # Retrieve data for pdf images
+        # Handle file upload
+        if request.method == 'POST':
+            # Check if the file is present in the request
+            if 'file' in request.files:
+                file = request.files['file']
+                file_data = file.read() # Assign value to file_data variable if 'file' is present
+                if file_data is not None:
+                    cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES) VALUES (?, ?)',(material_name, file_data))
+
+
+
         # Commit changes to the database
         database.conn.commit()
 

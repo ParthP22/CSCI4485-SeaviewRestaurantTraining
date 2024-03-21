@@ -92,12 +92,22 @@
     <div class="container">
         <h1>Create Quiz</h1>
 
-        <form id="quizForm" action = "{{ url_for('quiz_editing') }}" method="POST">
+        <form id="quizForm" action = "{{ url_for('quiz_editing') }}" method="POST" enctype="multipart/form-data">
             <label for="quiz_name">Quiz Name:</label><br>
             <input type="text" id="quizTitle" name="quiz_name"><br><br>
 
             <label for="quiz_desc">Quiz Description:</label><br>
             <textarea id="quiz_desc" name="quiz_desc"></textarea><br><br>
+
+            <label for="material_name">Name the PDF file:</label><br>
+            <input type="text" id="material_name" name="material_name"><br><br>
+
+            <label for="file">Choose an image to upload:</label>
+        <input type="file" id="file" name="file" accept=".pdf, .jpg, .jpeg, .png">
+        <!-- Accept attribute specifies the types of files that the server accepts (optional) -->
+
+        <br>
+		<br>
 
             <div id="questionsContainer">
                 <!-- Questions will be dynamically added here -->
