@@ -78,5 +78,5 @@ def quiz_editing():
         # Commit changes to the database
         database.conn.commit()
 
-    return render_template('manage_quizzes.html')
+    return redirect(url_for('manage_quizzes'))
 
