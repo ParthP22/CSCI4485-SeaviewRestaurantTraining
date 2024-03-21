@@ -49,7 +49,7 @@ def quiz_editing():
                 questions.append(question)
 
         cursor = database.conn.cursor()
-        cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, EMPLOYER_ID, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 1, 0, 0, 1, quiz_desc))
+        cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, EMPLOYER_ID, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 1, 0, 0, 1, quiz_desc, 0))
 
         #Gets the ID from the quiz that was just created to upload that into the questions that are created.
         cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
@@ -71,7 +71,7 @@ def quiz_editing():
                 file = request.files['file']
                 file_data = file.read() # Assign value to file_data variable if 'file' is present
                 if file_data is not None:
-                    cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES) VALUES (?, ?)',(material_name, file_data))
+                    cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',(material_name, file_data, quizID))
 
 
 
