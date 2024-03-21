@@ -49,14 +49,19 @@ def quiz_editing():
                 questions.append(question)
 
         cursor = database.conn.cursor()
-
         cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, EMPLOYER_ID, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 1, 0, 0, 1, quiz_desc))
 
-        #for question in questions:
-        #    cursor.execute('''INSERT INTO QUESTIONS (QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER)
-        #                          VALUES (?, ?, ?, ?, ?, ?)''',
-        #                   (question['QUESTION'], question['ANSWER_A'], question['ANSWER_B'],
-         #                   question['ANSWER_C'], question['ANSWER_D'], question['CORRECT_ANSWER']))
+        #Gets the ID from the quiz that was just created to upload that into the questions that are created.
+        cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
+        quizID = cursor.fetchone()[0]
+
+        #Uploads questions into the database
+        for question in questions:
+            cursor.execute('''INSERT INTO QUESTIONS (QUIZ_ID, QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, 
+            CORRECT_ANSWER, NUM_CORRECT, NUM_INCORRECT, NUM_EMPLOYEES_COMPLETED, QUESTION_TYPE)
+                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                           (quizID, question['QUESTION'], question['ANSWER_A'], question['ANSWER_B'],
+                           question['ANSWER_C'], question['ANSWER_D'], question['CORRECT_ANSWER'], 0, 0, 0, "Multiple Choice"))
 
         # Retrieve data for pdf images
         # Handle file upload
