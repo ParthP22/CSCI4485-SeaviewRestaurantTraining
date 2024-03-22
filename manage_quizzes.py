@@ -2,7 +2,6 @@
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
 
-import re
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
 from routes import website
