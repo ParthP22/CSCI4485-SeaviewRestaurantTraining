@@ -26,18 +26,24 @@
                 <th>Quiz Name</th>
                 <th>Quiz Description</th>
                 <th>Total Questions</th>
+                <th>Take Quiz</th>
                 <th>Edit</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             {% for quiz in quizzes %}
-                <tr>
-                    <td>{{ quiz[0] }}</td>
-                    <td>{{ quiz[1] }}</td>
-                    <td>{{ quiz[6] }}</td>
-                    <td>{{ quiz[2] }}</td>
-                    <td>Edit</td>
-                </tr>
+                {% if quiz[7] == 0 %}
+                    <tr>
+                        <td>{{ quiz[0] }}</td>
+                        <td>{{ quiz[1] }}</td>
+                        <td>{{ quiz[6] }}</td>
+                        <td>{{ quiz[2] }}</td>
+                        <td> <a href="/take_quiz?id={{ quiz[0] }}">Take Quiz</a></td></td>
+                        <td>Edit</td>
+                        <td> <a href="/deleteQuiz/{{ quiz[0] }}">Delete</a></td></td>
+                    </tr>
+                {% endif %}
             {% endfor %}
         </tbody>
         <tfoot>

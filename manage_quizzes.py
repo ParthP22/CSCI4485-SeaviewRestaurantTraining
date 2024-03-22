@@ -79,3 +79,11 @@ def quiz_editing():
 
     return redirect(url_for('manage_quizzes'))
 
+@website.route('/deleteQuiz/<int:quiz_id>', methods=['GET'])
+def deleteQuiz_route(quiz_id):
+    cursor = database.conn.cursor()
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
+    database.conn.commit()
+
+    return redirect(url_for('manage_quizzes'))
+
