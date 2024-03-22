@@ -9,22 +9,18 @@ from routes import website
 @website.route('/take_quiz')
 def index():
     # Connect to SQLite database
-    conn = sqlite3.connect('your_database.db')
-    cursor = conn.cursor()
+    cursor = database.conn.cursor()
 
-    # Fetch questions from the database
-    cursor.execute("SELECT id, question_text FROM questions")
+    # Fetch questions from the database  --------------------------------- This quiz_id is undefined, fetch from the url.
+    cursor.execute("SELECT QUESTION_ID, QUESTION FROM QUESTIONS WHERE QUIZ_ID = quiz_id")
     questions = []
     for row in cursor.fetchall():
-        question_id, question_text = row
-        cursor.execute("SELECT id, option_text FROM options WHERE question_id = ?", (question_id,))
-        options = [{'id': option_id, 'option_text': option_text} for option_id, option_text in cursor.fetchall()]
-        questions.append({'id': question_id, 'question_text': question_text, 'options': options})
+        question_id, question = row
+        cursor.execute("SELECT ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUESTION_ID = ?", (question_id))
+        answers = [{'answer_a': ANSWER_A, 'answer_b': ANSWER_B, 'answer_c': ANSWER_C, 'answer_d': ANSWER_D, 'correct_answer': CORRECT_ANSWER}
+                   for ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER in cursor.fetchall()]
+        questions.append({'id': question_id, 'question_text': question, 'options': answers})
 
-    conn.close()
+    cursor.close()
 
-    return render_template('quiz_template.html', questions=questions)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    return render_template('take_quiz.html', questions=questions)
