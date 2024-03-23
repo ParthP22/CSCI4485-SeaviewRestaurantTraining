@@ -10,7 +10,7 @@
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
             color: #343a40;
-            margin: 0;
+            margin: 100px;
             padding: 0;
         }
         h1 {
@@ -67,29 +67,24 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Quiz Name</h1>
-        <p>Quiz Description</p>
+    <h1>{{ quiz_name }}</h1>
+    <p>{{ quiz_desc }}</p>
 
-        <!-- Display PDF file -->
-        <embed src="{{ url_for('static', filename='example.pdf') }}" width="800px" height="600px" />
-
-        <form id="quiz_form">
-            <h2>Quiz Questions</h2>
-            <div id="questions_container">
-                {% for question in questions %}
-                <div class="question">
-                    <p>{{ loop.index }}. {{ question.question_text }}</p>
-                    {% for option in question.options %}
-                    <input type="radio" name="question_{{ question.id }}" value="{{ option.id }}">
-                    <label>{{ option.option_text }}</label><br>
-                    {% endfor %}
-                    <br>
-                </div>
+    <form id="quiz_form">
+        {% for question in questions %}
+        <div class="question">
+            <p>{{ loop.index }}. {{ question.question_text }}</p>
+            <ul>
+                {% for option in question.options %}
+                <li>
+                    <input type="radio" id="option_{{ question.id }}_{{ option.option_id }}" name="question_{{ question.id }}" value="{{ option.option_id }}">
+                    <label for="option_{{ question.id }}_{{ option.option_id }}">{{ option.option_text }}</label>
+                </li>
                 {% endfor %}
-            </div>
-            <button type="submit">Submit Quiz</button>
-        </form>
-    </div>
+            </ul>
+        </div>
+        {% endfor %}
+        <a href="/manage_quizzes">Submit Quiz</a>
+    </form>
 </body>
 </html>

@@ -20,6 +20,42 @@ def quiz_editor():
     cursor = database.conn.cursor()
     return render_template('quiz_editor.html')
 
+@website.route('/take_quiz', methods=['GET'])
+def take_quiz():
+    # Retrieve quiz ID from the request URL
+    quiz_id = request.args.get('id')
+
+    # Connect to SQLite database
+    conn = database.conn
+
+    # Fetch quiz details from the database
+    cursor = conn.cursor()
+    cursor.execute("SELECT QUIZ_NAME, QUIZ_DESC FROM QUIZZES WHERE QUIZ_ID = ?", (quiz_id,))
+    quiz_info = cursor.fetchone()  # Assuming only one row will be returned
+    quiz_name, quiz_desc = quiz_info if quiz_info else (None, None)
+
+    # Fetch questions for the specified quiz from the database
+    cursor.execute(
+        "SELECT QUESTION_ID, QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+        (quiz_id,))
+    questions = []
+    for row in cursor.execute(
+            "SELECT QUESTION_ID, QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+            (quiz_id,)):
+        question_id, question_text, answer_a, answer_b, answer_c, answer_d, correct_answer = row
+        options = [
+            {'option_id': 1, 'option_text': answer_a},
+            {'option_id': 2, 'option_text': answer_b},
+            {'option_id': 3, 'option_text': answer_c},
+            {'option_id': 4, 'option_text': answer_d}
+        ]
+        questions.append({'id': question_id, 'question_text': question_text, 'options': options})
+
+    cursor.close()
+
+    # Render the template with quiz details and questions
+    return render_template('take_quiz.html', quiz_name=quiz_name, quiz_desc=quiz_desc, questions=questions)
+
 @website.route('/quiz_editing', methods=['GET', 'POST'])
 def quiz_editing():
     count = 0
