@@ -66,7 +66,7 @@ def authenticate_user():
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
-        # Check if account exists using MySQL
+        # Check if account exists using SQLite
         cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (username, password,))
         # Fetch one record and return result
         account = cursor.fetchone()

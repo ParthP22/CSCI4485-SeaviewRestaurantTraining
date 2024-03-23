@@ -30,16 +30,31 @@ def send_mail(subject, body):
 
 @website.route('/announcements', methods=['GET', 'POST'])
 def announcements():
-    status = "Type your message"
-    if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
+    cursor = database.conn.cursor()
+    # If account exists in accounts table in out database
 
-        subject = request.form['subject']
-        body = request.form['body']
-        send_mail(subject, body)
-        status = "Email sent successfully"
-        # return redirect(url_for('announcements'))
-        return render_template('announcements.html', status=status)
+    username = session['username']
+    password = session['password']
+    cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (username, password,))
+    account = cursor.fetchone()
+    if account[6] == 1 or account[6] == 2:
+        # Admin
+        status = "Type your message"
+        if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
+
+            subject = request.form['subject']
+            body = request.form['body']
+            send_mail(subject, body)
+            status = "Email sent successfully"
+            cursor.execute('INSERT INTO ANNOUNCEMENTS()')
+            # return redirect(url_for('announcements'))
+            return render_template('announcements.html', status=status)
+
+        else:
+            return render_template('announcements.html', status=status)
 
     else:
-        return render_template('announcements.html', status=status)
+        # employee/basic user page
+
+        return render_employee_dashboard(account, cursor)
 
