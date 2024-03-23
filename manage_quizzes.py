@@ -17,8 +17,33 @@ def manage_quizzes():
 #Routes quiz list to the quiz editor
 @website.route('/quiz_editor')
 def quiz_editor():
+    quiz_id = request.args.get('quiz_id')
+    quiz_name = request.args.get('quiz_name')
+    quiz_desc = request.args.get('quiz_desc')
+
     cursor = database.conn.cursor()
-    return render_template('quiz_editor.html')
+
+    # Fetch all questions associated with the quiz
+    cursor.execute(
+        "SELECT QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+        (quiz_id,))
+    questions = []
+    for row in cursor.fetchall():
+        question_text, option_a, option_b, option_c, option_d, correct_answer = row
+        questions.append({
+            'question_text': question_text,
+            'option_a': option_a,
+            'option_b': option_b,
+            'option_c': option_c,
+            'option_d': option_d,
+            'correct_answer': correct_answer
+        })
+
+    cursor.close()
+
+    return render_template('quiz_editor.html', quiz_id=quiz_id, quiz_name=quiz_name, quiz_desc=quiz_desc,
+                           questions=questions)
+
 
 @website.route('/take_quiz', methods=['GET'])
 def take_quiz():
@@ -118,7 +143,15 @@ def quiz_editing():
 @website.route('/deleteQuiz/<int:quiz_id>', methods=['GET'])
 def deleteQuiz_route(quiz_id):
     cursor = database.conn.cursor()
-    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
+    database.conn.commit()
+
+    return redirect(url_for('manage_quizzes'))
+
+@website.route('/editQuiz/<int:quiz_id>', methods=['GET'])
+def editQuiz_route(quiz_id):
+    cursor = database.conn.cursor()
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
