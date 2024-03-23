@@ -1,18 +1,19 @@
 # Author(s): Ryan Minneo, Ryan Nguyen
-# This file contains the code that is allow the employee to take quizzes
+# This file contains the code that allows the employees to take quizzes
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
 from routes import website
 
 
-@website.route('/take_quiz')
-def index():
+@website.route('/take_quiz', methods=['GET'])
+def take_quiz():
+    quiz_id = request.args.get('id')
     # Connect to SQLite database
     cursor = database.conn.cursor()
 
     # Fetch questions from the database  --------------------------------- This quiz_id is undefined, fetch from the url.
-    cursor.execute("SELECT QUESTION_ID, QUESTION FROM QUESTIONS WHERE QUIZ_ID = quiz_id")
+    cursor.execute("SELECT QUESTION_ID, QUESTION FROM QUESTIONS WHERE QUIZ_ID = ?", quiz_id)
     questions = []
     for row in cursor.fetchall():
         question_id, question = row
