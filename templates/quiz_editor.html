@@ -94,10 +94,10 @@
 
         <form id="quizForm" action = "{{ url_for('quiz_editing') }}" method="POST" enctype="multipart/form-data">
             <label for="quiz_name">Quiz Name:</label><br>
-            <input type="text" id="quizTitle" name="quiz_name"><br><br>
+            <input type="text" id="quizTitle" name="quiz_name" value="{{ request.args.get('quiz_name', '') }}"><br><br>
 
             <label for="quiz_desc">Quiz Description:</label><br>
-            <textarea id="quiz_desc" name="quiz_desc"></textarea><br><br>
+            <textarea id="quiz_desc" name="quiz_desc">{{ request.args.get('quiz_desc', '') }}</textarea><br><br>
 
             <label for="material_name">Name the PDF file:</label><br>
             <input type="text" id="material_name" name="material_name"><br><br>
@@ -110,7 +110,35 @@
 		<br>
 
             <div id="questionsContainer">
-                <!-- Questions will be dynamically added here -->
+                <!-- Existing questions will be dynamically filled here -->
+                {% for question in questions %}
+                    <div class="question">
+                        <label for="question{{ loop.index }}">Question:</label><br>
+                        <input type="text" id="question{{ loop.index }}" name="question{{ loop.index }}" value="{{ question.question_text }}"><br><br>
+
+                        <label for="option{{ loop.index }}A">Option A:</label><br>
+                        <input type="text" id="option{{ loop.index }}A" name="option{{ loop.index }}A" value="{{ question.option_a }}"><br><br>
+
+                        <label for="option{{ loop.index }}B">Option B:</label><br>
+                        <input type="text" id="option{{ loop.index }}B" name="option{{ loop.index }}B" value="{{ question.option_b }}"><br><br>
+
+                        <label for="option{{ loop.index }}C">Option C:</label><br>
+                        <input type="text" id="option{{ loop.index }}C" name="option{{ loop.index }}C" value="{{ question.option_c }}"><br><br>
+
+                        <label for="option{{ loop.index }}D">Option D:</label><br>
+                        <input type="text" id="option{{ loop.index }}D" name="option{{ loop.index }}D" value="{{ question.option_d }}"><br><br>
+
+                        <label for="correctAnswer{{ loop.index }}">Correct Answer:</label><br>
+                        <select id="correctAnswer{{ loop.index }}" name="correctAnswer{{ loop.index }}">
+                            <option value="optionA" {% if question.correct_answer == 'optionA' %} selected {% endif %}>Option A</option>
+                            <option value="optionB" {% if question.correct_answer == 'optionB' %} selected {% endif %}>Option B</option>
+                            <option value="optionC" {% if question.correct_answer == 'optionC' %} selected {% endif %}>Option C</option>
+                            <option value="optionD" {% if question.correct_answer == 'optionD' %} selected {% endif %}>Option D</option>
+                        </select><br><br>
+
+                        <button type="button" onclick="deleteQuestion(this)" style="background-color: #007bff;">Delete Question</button>
+                    </div>
+                {% endfor %}
             </div>
 
             <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
@@ -123,7 +151,9 @@
             </select>
             -->
 
-            <input type="submit" onclick="uploadQuiz()">Create Quiz</input>
+            {% if request.args.get('quiz_id') %} <input type="submit" onclick="editQuiz(request.args.get('quiz_id'))">
+            {% else %} <input type="submit" onclick="createQuiz()">
+            {% endif %}
         </form>
     </div>
 
@@ -177,11 +207,20 @@
         }
 
         // Function to upload quiz data and navigate to manage_quizzes page
-        function uploadQuiz() {
-            // Perform actions to upload quiz data to the database
-
+        function createQuiz() {
+            // Delete previous quiz if updating
+            print("creating")
             // Redirect to manage_quizzes page
             window.location.href = "manage_quizzes";
+        }
+
+        function editQuiz(quiz_id) {
+            // Delete previous quiz if updating
+
+
+            // Redirect to manage_quizzes page
+            print("editing")
+            window.location.href = "editQuiz/?", quiz_id;
         }
 
         // Function to navigate back

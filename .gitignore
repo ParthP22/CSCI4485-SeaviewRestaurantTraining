@@ -2,3 +2,7 @@
 /.idea/
 /credentials.py
 /__pycache__/
+/Seaview_DB.db-journal
+/.DS_Store
+/static/.DS_Store
+/templates/.DS_Store

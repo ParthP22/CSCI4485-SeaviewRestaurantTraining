@@ -2,7 +2,6 @@
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
 
-import re
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
 from routes import website
@@ -18,8 +17,69 @@ def manage_quizzes():
 #Routes quiz list to the quiz editor
 @website.route('/quiz_editor')
 def quiz_editor():
+    quiz_id = request.args.get('quiz_id')
+    quiz_name = request.args.get('quiz_name')
+    quiz_desc = request.args.get('quiz_desc')
+
     cursor = database.conn.cursor()
-    return render_template('quiz_editor.html')
+
+    # Fetch all questions associated with the quiz
+    cursor.execute(
+        "SELECT QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+        (quiz_id,))
+    questions = []
+    for row in cursor.fetchall():
+        question_text, option_a, option_b, option_c, option_d, correct_answer = row
+        questions.append({
+            'question_text': question_text,
+            'option_a': option_a,
+            'option_b': option_b,
+            'option_c': option_c,
+            'option_d': option_d,
+            'correct_answer': correct_answer
+        })
+
+    cursor.close()
+
+    return render_template('quiz_editor.html', quiz_id=quiz_id, quiz_name=quiz_name, quiz_desc=quiz_desc,
+                           questions=questions)
+
+
+@website.route('/take_quiz', methods=['GET'])
+def take_quiz():
+    # Retrieve quiz ID from the request URL
+    quiz_id = request.args.get('id')
+
+    # Connect to SQLite database
+    conn = database.conn
+
+    # Fetch quiz details from the database
+    cursor = conn.cursor()
+    cursor.execute("SELECT QUIZ_NAME, QUIZ_DESC FROM QUIZZES WHERE QUIZ_ID = ?", (quiz_id,))
+    quiz_info = cursor.fetchone()  # Assuming only one row will be returned
+    quiz_name, quiz_desc = quiz_info if quiz_info else (None, None)
+
+    # Fetch questions for the specified quiz from the database
+    cursor.execute(
+        "SELECT QUESTION_ID, QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+        (quiz_id,))
+    questions = []
+    for row in cursor.execute(
+            "SELECT QUESTION_ID, QUESTION, ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D, CORRECT_ANSWER FROM QUESTIONS WHERE QUIZ_ID = ?",
+            (quiz_id,)):
+        question_id, question_text, answer_a, answer_b, answer_c, answer_d, correct_answer = row
+        options = [
+            {'option_id': 1, 'option_text': answer_a},
+            {'option_id': 2, 'option_text': answer_b},
+            {'option_id': 3, 'option_text': answer_c},
+            {'option_id': 4, 'option_text': answer_d}
+        ]
+        questions.append({'id': question_id, 'question_text': question_text, 'options': options})
+
+    cursor.close()
+
+    # Render the template with quiz details and questions
+    return render_template('take_quiz.html', quiz_name=quiz_name, quiz_desc=quiz_desc, questions=questions)
 
 @website.route('/quiz_editing', methods=['GET', 'POST'])
 def quiz_editing():
@@ -49,7 +109,7 @@ def quiz_editing():
                 questions.append(question)
 
         cursor = database.conn.cursor()
-        cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, EMPLOYER_ID, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 1, 0, 0, 1, quiz_desc, 0))
+        cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, 1, quiz_desc, 0))
 
         #Gets the ID from the quiz that was just created to upload that into the questions that are created.
         cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
@@ -77,6 +137,22 @@ def quiz_editing():
 
         # Commit changes to the database
         database.conn.commit()
+
+    return redirect(url_for('manage_quizzes'))
+
+@website.route('/deleteQuiz/<int:quiz_id>', methods=['GET'])
+def deleteQuiz_route(quiz_id):
+    cursor = database.conn.cursor()
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
+    database.conn.commit()
+
+    return redirect(url_for('manage_quizzes'))
+
+@website.route('/editQuiz/<int:quiz_id>', methods=['GET'])
+def editQuiz_route(quiz_id):
+    cursor = database.conn.cursor()
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
+    database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
 
