@@ -14,6 +14,8 @@ from session_handling import *
 from announcements import *
 from manage_employees import *
 from manage_quizzes import *
+from historyLog import *
+from profile_page import *
 
 
 
