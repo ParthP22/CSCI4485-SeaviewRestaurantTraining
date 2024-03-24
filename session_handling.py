@@ -80,6 +80,7 @@ def authenticate_user():
         account = cursor.fetchone()
         # If account exists in accounts table in out database
         if account:
+            session['id'] = account[0]
             session['logged_in'] = True
             session['username'] = username
             session['password'] = password
