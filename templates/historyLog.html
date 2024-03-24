@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}History Log - Seaview Training{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <h2>History Log</h2>
+        </div>
+    </div>
+    <table class="display" id="history_table" width="100%">
+        <thead>
+            <tr>
+                <th><a href="?sort=ATTEMPT_ID&order={{ 'desc' if sort_by == 'ATTEMPT_ID' and order == 'asc' else 'asc' }}">Attempt ID</a></th>
+                <th><a href="?sort=EMPLOYEE_ID&order={{ 'desc' if sort_by == 'EMPLOYEE_ID' and order == 'asc' else 'asc' }}">Employee ID</a></th>
+                <th><a href="?sort=First_Name&order={{ 'desc' if sort_by == 'First_Name' and order == 'asc' else 'asc' }}">First Name</a></th>
+                <th><a href="?sort=Last_Name&order={{ 'desc' if sort_by == 'Last_Name' and order == 'asc' else 'asc' }}">Last Name</a></th>
+                <th><a href="?sort=QUIZ_ID&order={{ 'desc' if sort_by == 'QUIZ_ID' and order == 'asc' else 'asc' }}">Quiz Number</a></th>
+                <th><a href="?sort=DATE_TIME&order={{ 'desc' if sort_by == 'DATE_TIME' and order == 'asc' else 'asc' }}">Date</a></th>
+                <th><a href="?sort=Score&order={{ 'desc' if sort_by == 'Score' and order == 'asc' else 'asc' }}">Score</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in history_logs %}
+            <tr>
+                <td>{{ log[0] }}</td>
+                <td>{{ log[1] }}</td>
+                <td>{{ log[2] }}</td>
+                <td>{{ log[3] }}</td>
+                <td>{{ log[4] }}</td>
+                <td>{{ log[5] }}</td>
+                <td>{{ '%.2f' | format(log[6]) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
