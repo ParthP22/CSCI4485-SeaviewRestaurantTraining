@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Announcements - Seaview Training{% endblock %}
+
+{% block content %}
+
+
+<h1>Announcements</h1>
+
+    <div style="padding: 20px; word-wrap: break-word;">
+        {% for subject,body,date in emails %}
+            <div>Date: {{date}}</div>
+            <div>Subject: {{subject}}</div>
+            <br/>
+            <div>Message: {{body}}</div>
+            <br/>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

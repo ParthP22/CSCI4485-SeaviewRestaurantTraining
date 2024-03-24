@@ -45,8 +45,16 @@ def render_employee_dashboard(account, cursor):
         for attempt in recent_attempts:
             total_correct += attempt[0]
             total_questions += attempt[0] + attempt[1]
+    if total_questions == 0:
+        percent = 0
+    else:
+        percent = total_correct / total_questions * 100
+        percent = round(percent, 2)
 
-    return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions)
+    cursor.execute('SELECT QUIZ_NAME, QUIZ_DESC FROM QUIZZES')
+    quizzes = cursor.fetchall()
+
+    return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions, quizzes=quizzes, percent=percent)
 
 @website.route('/dashboard', methods=['GET', 'POST'])
 def authenticate_user():
@@ -66,7 +74,7 @@ def authenticate_user():
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
-        # Check if account exists using MySQL
+        # Check if account exists using SQLite
         cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (username, password,))
         # Fetch one record and return result
         account = cursor.fetchone()
