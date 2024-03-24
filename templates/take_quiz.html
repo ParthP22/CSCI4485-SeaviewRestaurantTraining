@@ -70,7 +70,8 @@
     <h1>{{ quiz_name }}</h1>
     <p>{{ quiz_desc }}</p>
 
-    <form id="quiz_form">
+    <form id="quiz_form" action = "{{ url_for('quiz_taking') }}" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name = "quiz_id" value = "{{ quiz_id }}">
         {% for question in questions %}
         <div class="question">
             <p>{{ loop.index }}. {{ question.question_text }}</p>
@@ -84,7 +85,16 @@
             </ul>
         </div>
         {% endfor %}
-        <a href="/manage_quizzes">Submit Quiz</a>
+        <input type="submit" onclick="submitQuiz()">
     </form>
+
+    <script>
+        function submitQuiz() {
+
+
+            window.location.href = "dashboard";
+        }
+
+    </script>
 </body>
 </html>
