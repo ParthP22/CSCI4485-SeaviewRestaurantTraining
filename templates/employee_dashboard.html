@@ -50,15 +50,23 @@
     Look at the HTML code that Pranjal did on base.html, where she created the header for "Home", "Contact", "Logout"
     if you need an example.-->
     <div style="width: 500px; text-align: left; padding: 30px">
-        <label>Quizzes</label>
-        <br/>
-        {% for quiz_name, quiz_desc in quizzes %}
-            <a href="" class="nav-link" style="word-wrap: break-word">{{quiz_name}} - {{quiz_desc}}</a>
 
-        {% endfor %}
-    </div>
-
-
+    <table class="display" id="quiz_table" width="100%">
+        <thead>
+            <tr>
+                <th>Quizzes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in quizzes %}
+                {% if quiz[5] == 1 and quiz[7] == 0 %}
+                    <tr>
+                        <td> <a href="{{ url_for('take_quiz') }}?id={{ quiz[0] }}" class="nav-link" style="word-wrap: break-word">{{quiz[1]}} - {{quiz[6]}}</a> </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
 
 
 
