@@ -51,7 +51,7 @@ def render_employee_dashboard(account, cursor):
         percent = total_correct / total_questions * 100
         percent = round(percent, 2)
 
-    cursor.execute('SELECT QUIZ_NAME, QUIZ_DESC FROM QUIZZES')
+    cursor.execute('SELECT * FROM QUIZZES')
     quizzes = cursor.fetchall()
 
     return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions, quizzes=quizzes, percent=percent)
