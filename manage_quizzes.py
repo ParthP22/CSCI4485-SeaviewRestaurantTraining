@@ -1,6 +1,7 @@
 # Author(s): Ryan Minneo, Ryan Nguyen
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
+import datetime
 
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
@@ -113,6 +114,23 @@ def quiz_taking():
         cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect), int(quiz_id)))
 
         database.conn.commit()
+
+        cursor.execute("SELECT MAX(ATTEMPT_NUMBER) FROM ATTEMPT_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?", (session['id'], quiz_id))
+        # curr_attempt = (0 if cursor.fetchone() is None else cursor.fetchone()[0]) + 1
+        recent_attempt = cursor.fetchone()
+        if recent_attempt[0] is not None:
+            curr_attempt = recent_attempt[0] + 1
+        else:
+            curr_attempt = 1
+
+        cursor.execute("INSERT INTO ATTEMPT_HISTORY_LOG(ATTEMPT_ID,EMPLOYEE_ID,QUIZ_ID,ATTEMPT_NUMBER,DATE_TIME,IS_COMPLETED,NUM_CORRECT,NUM_INCORRECT)"
+                       "VALUES(?,?,?,?,?,?,?,?)", (None,session['id'],quiz_id,curr_attempt,datetime.datetime.now(), 1 if totalIncorrect == 0 else 0, totalCorrect, totalIncorrect,))
+
+        database.conn.commit()
+
+
+
+
 
     # This redirects to the employee dashboard, I tried putting dashboard and it wouldn't let me so I did this.
     # Later this will redirect to another page where it'll display the score you got, if you get less than 100,
