@@ -69,17 +69,55 @@ def take_quiz():
             (quiz_id,)):
         question_id, question_text, answer_a, answer_b, answer_c, answer_d, correct_answer = row
         options = [
-            {'option_id': 1, 'option_text': answer_a},
-            {'option_id': 2, 'option_text': answer_b},
-            {'option_id': 3, 'option_text': answer_c},
-            {'option_id': 4, 'option_text': answer_d}
+            {'option_id': 'optionA', 'option_text': answer_a},
+            {'option_id': 'optionB', 'option_text': answer_b},
+            {'option_id': 'optionC', 'option_text': answer_c},
+            {'option_id': 'optionD', 'option_text': answer_d}
         ]
         questions.append({'id': question_id, 'question_text': question_text, 'options': options})
 
     cursor.close()
 
     # Render the template with quiz details and questions
-    return render_template('take_quiz.html', quiz_name=quiz_name, quiz_desc=quiz_desc, questions=questions)
+    return render_template('take_quiz.html', quiz_id = quiz_id, quiz_name=quiz_name, quiz_desc=quiz_desc, questions=questions)
+
+@website.route('/quiz_taking', methods=['GET', 'POST'])
+def quiz_taking():
+    if request.method == 'POST':
+        quiz_id = request.form.get('quiz_id')
+
+        cursor = database.conn.cursor()
+        cursor.execute("SELECT * FROM questions WHERE quiz_id = ?", (quiz_id,))
+        questions = cursor.fetchall()
+        cursor.close()
+
+        #Creates an array of inputted answers. You don't even need this to be honest, but if you want all the answers in one array, here ya go
+        inputtedAnswers = {}
+        totalCorrect = 0
+        totalIncorrect = 0
+        cursor = database.conn.cursor()
+        # Goes through each question in the quiz and checks them against the correct answer for each problem.
+        for question in questions:
+            question_id = question[0]
+            inputAnswer = request.form.get('question_' + str(question_id))
+            inputtedAnswers[question_id] = inputAnswer
+            if inputAnswer == question[7]:
+                #print("correct!") # This can be deleted, I was just testing it.
+                totalCorrect += 1
+                cursor.execute("UPDATE QUESTIONS SET NUM_CORRECT = NUM_CORRECT + 1 WHERE QUESTION_ID=?", (int(question_id),))
+            else:
+                totalIncorrect += 1
+                cursor.execute("UPDATE QUESTIONS SET NUM_INCORRECT = NUM_INCORRECT + 1 WHERE QUESTION_ID=?", (int(question_id),))
+
+        cursor.execute("UPDATE QUIZZES SET TOTAL_CORRECT = TOTAL_CORRECT + ? WHERE QUIZ_ID=?", (int(totalCorrect), int(quiz_id)))
+        cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect), int(quiz_id)))
+
+        database.conn.commit()
+
+    # This redirects to the employee dashboard, I tried putting dashboard and it wouldn't let me so I did this.
+    # Later this will redirect to another page where it'll display the score you got, if you get less than 100,
+    # It will just contain a retry button, and if you get 100, there will be another button for returning to dashboard.
+    return redirect(url_for('authenticate_user'))
 
 @website.route('/quiz_editing', methods=['GET', 'POST'])
 def quiz_editing():
