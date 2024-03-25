@@ -18,8 +18,9 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
-                <th>Role</th>
-                <th>Edit</th>
+                <th>Role Name</th>
+                <th>Manager ID</th>
+                <th>Manager Name</th>
             </tr>
         </thead>
         <tbody>
@@ -27,11 +28,14 @@
                 <tr>
                     <td>{{ user[0] }}</td>
                     <td>{{ user[1] }}</td>
+                    <td>{{ user[2] }}</td>
+                    <td>{{ user[3] }}</td>
                     <td>{{ user[4] }}</td>
                     <td>{{ user[5] }}</td>
-                    <td>{{ user[3] }}</td>
                     <td>{{ user[6] }}</td>
-                    <td> <a href="/delete/{{ user[0] }}">Delete</a></td></td>
+                    <td>{{ user[7] }} {{ user[8] }}</td>
+                    <td> <a href="/delete/{{ user[0] }}">Delete</a></td>
+                    <td> <a href="/progress_report/{{ user[0] }}">Receive Report</a></td>
                 </tr>
             {% endfor %}
         </tbody>

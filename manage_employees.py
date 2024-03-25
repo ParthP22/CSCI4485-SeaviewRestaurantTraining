@@ -3,7 +3,12 @@
 # such as being able to register new employees.
 
 import re
+import smtplib
+import ssl
+
 from flask import Flask, render_template, redirect, url_for, session, request
+
+import credentials
 import database
 from routes import website
 
@@ -22,8 +27,12 @@ def register_employee():
 def manage_employee():
     cursor = database.conn.cursor()
 
-    cursor.execute('SELECT * FROM Users ')
+    cursor.execute('SELECT u.ID, u.USERNAME, u.FIRST_NAME, u.LAST_NAME, u.EMAIL, r.ROLE_NAME, u.MANAGER_ID, m.FIRST_NAME, m.LAST_NAME '
+                   'FROM Users u JOIN Roles r ON u.ROLE_ID = r.ID LEFT JOIN Users m  ON u.MANAGER_ID = m.ID')
     users = cursor.fetchall()
+
+
+
     return render_template('manage_employee.html', users = users)
 
 
