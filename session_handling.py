@@ -22,7 +22,7 @@ def logout():
 def render_employee_dashboard(account, cursor):
     cursor.execute('SELECT NUM_CORRECT, NUM_INCORRECT, MAX(ATTEMPT_NUMBER) '
                    'FROM ATTEMPT_HISTORY_LOG '
-                   'WHERE EMPLOYEE_ID=? '
+                   'WHERE EMPLOYEE_ID=? AND QUIZ_ID IN (SELECT QUIZ_ID FROM QUIZZES WHERE IS_DELETED=0)'
                    'GROUP BY QUIZ_ID',
                    (account[0],))
     recent_attempts = cursor.fetchall()
@@ -51,7 +51,8 @@ def render_employee_dashboard(account, cursor):
         percent = total_correct / total_questions * 100
         percent = round(percent, 2)
 
-    cursor.execute('SELECT * FROM QUIZZES')
+    cursor.execute('SELECT * FROM QUIZZES WHERE QUIZ_ID NOT IN '
+                   '(SELECT DISTINCT QUIZ_ID FROM ATTEMPT_HISTORY_LOG WHERE IS_COMPLETED=1 AND EMPLOYEE_ID=?) ', (session['id'],))
     quizzes = cursor.fetchall()
 
     return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions, quizzes=quizzes, percent=percent)
