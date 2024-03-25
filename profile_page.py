@@ -14,6 +14,3 @@ def profile_page():
     user_profile = cursor.fetchone()
     return render_template('profile_page.html', user_profile=user_profile)
 
-# Author(s): Ahmed Malik
-# This file contains the code that is used to view the users profile oage
-

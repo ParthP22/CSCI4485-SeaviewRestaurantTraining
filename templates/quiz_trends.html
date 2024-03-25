@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Quiz Trends{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% for quiz_id, data in quizzes.items() %}
+        <div>
+            <h3>Quiz {{ quiz_id }}</h3>
+            <canvas id="quizTrendsChart{{ quiz_id }}" height="400" width="800"></canvas>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Only include this if jQuery is needed for other parts of your base.html or other scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    {% for quiz_id, data in quizzes.items() %}
+    var ctx = document.getElementById('quizTrendsChart{{ quiz_id }}').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ data.questions|tojson }},
+            datasets: [{
+                label: 'Correct Answers',
+                data: {{ data.num_correct|tojson }},
+                backgroundColor: 'rgba(0, 128, 0, 0.6)'
+            }, {
+                label: 'Incorrect Answers',
+                data: {{ data.num_incorrect|tojson }},
+                backgroundColor: 'rgba(255, 0, 0, 0.6)'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    {% endfor %}
+</script>
+{% endblock %}
