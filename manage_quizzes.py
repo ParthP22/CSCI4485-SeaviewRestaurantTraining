@@ -167,9 +167,25 @@ def quiz_editing():
         cursor = database.conn.cursor()
         cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, 1, quiz_desc, 0))
 
+
         #Gets the ID from the quiz that was just created to upload that into the questions that are created.
         cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
         quizID = cursor.fetchone()[0]
+
+        cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
+                       (session['id'], quizID))
+        # curr_attempt = (0 if cursor.fetchone() is None else cursor.fetchone()[0]) + 1
+
+        recent_change = cursor.fetchone()
+        curr_change = 1
+        if recent_change[0] is not None:
+            curr_change = recent_change[0] + 1
+        else:
+            curr_change = 1
+
+        cursor.execute(
+            'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, CHANGE_NUMBER, DATE_TIME, ACTION_TYPE)'
+            'VALUES(?,?,?,?,?,?)', (None, session['id'], quizID, curr_change, datetime.datetime.now(), 'CREATE'))
 
         #Uploads questions into the database
         for question in questions:
@@ -199,7 +215,22 @@ def quiz_editing():
 @website.route('/deleteQuiz/<int:quiz_id>', methods=['GET'])
 def deleteQuiz_route(quiz_id):
     cursor = database.conn.cursor()
-    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
+
+    cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
+                   (session['id'], quiz_id))
+
+    recent_change = cursor.fetchone()
+    curr_change = 1
+    if recent_change[0] is not None:
+        curr_change = recent_change[0] + 1
+    else:
+        curr_change = 1
+
+    cursor.execute(
+        'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, CHANGE_NUMBER, DATE_TIME, ACTION_TYPE)'
+        'VALUES(?,?,?,?,?,?)', (None, session['id'], quiz_id, curr_change, datetime.datetime.now(), 'DELETE'))
+
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
@@ -207,7 +238,7 @@ def deleteQuiz_route(quiz_id):
 @website.route('/editQuiz/<int:quiz_id>', methods=['GET'])
 def editQuiz_route(quiz_id):
     cursor = database.conn.cursor()
-    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id))
+    cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))

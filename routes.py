@@ -16,6 +16,7 @@ from manage_employees import *
 from manage_quizzes import *
 from historyLog import *
 from profile_page import *
+from quiz_log import *
 
 
 
