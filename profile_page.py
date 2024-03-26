@@ -1,5 +1,5 @@
 # Author(s): Ahmed Malik
-# This file contains the code that is used to view the users profile oage
+# This file contains the code that is used to view the users profile page
 
 
 import re
