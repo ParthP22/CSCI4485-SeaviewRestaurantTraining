@@ -1,6 +1,7 @@
 # Author(s): Ryan Minneo, Ryan Nguyen
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
+import base64
 import datetime
 import io
 import smtplib
@@ -59,6 +60,21 @@ def quiz_editor():
     else:
         return render_template('prohibited.html')
 
+@website.route('/quiz_material', methods=['GET', 'POST'])
+def quiz_material():
+    quiz_id = request.args.get('id')
+
+    cursor = database.conn.cursor()
+    cursor.execute('SELECT MATERIAL_BYTES FROM TRAINING_MATERIALS WHERE QUIZ_ID=?', (quiz_id,))
+    result = cursor.fetchone()
+    imageBytes = result[0]
+    if imageBytes:
+        image_base64 = base64.b64encode(imageBytes).decode('utf-8')
+    else:
+        print("No image found")
+
+
+    return render_template('quiz_material.html', quiz_id = quiz_id, image_data = image_base64)
 
 
 @website.route('/take_quiz', methods=['GET'])
@@ -163,10 +179,6 @@ def quiz_taking():
         # send_reports.send_report()
 
         database.conn.commit()
-
-
-
-
 
     # This redirects to the employee dashboard, I tried putting dashboard and it wouldn't let me so I did this.
     # Later this will redirect to another page where it'll display the score you got, if you get less than 100,
