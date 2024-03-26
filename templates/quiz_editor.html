@@ -143,15 +143,10 @@
                 {% endfor %}
             </div>
 
-            <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
+            <label for="isVisible">Visibility:</label><br>
+            <input type="checkbox" id="isVisible" name="isVisible" value="1"><br><br>
 
-            <!--
-            <select name="isVisible" class="dropdown" style="width: 390px; height: 30px">
-                <option value="0" selected>Should this be visible to employees?</option>
-                <option value="1" selected>No</option>
-                <option value="2" selected>Yes</option>
-            </select>
-            -->
+            <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
 
             {% if request.args.get('quiz_id') %} <input type="submit" onclick="editQuiz(request.args.get('quiz_id'))">
             {% else %} <input type="submit" onclick="createQuiz()">
@@ -211,7 +206,7 @@
         // Function to upload quiz data and navigate to manage_quizzes page
         function createQuiz() {
             // Delete previous quiz if updating
-            print("creating")
+
             // Redirect to manage_quizzes page
             window.location.href = "manage_quizzes";
         }
@@ -219,9 +214,7 @@
         function editQuiz(quiz_id) {
             // Delete previous quiz if updating
 
-
             // Redirect to manage_quizzes page
-            print("editing")
             window.location.href = "editQuiz/?id=", quiz_id;
         }
 

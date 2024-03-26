@@ -1,6 +1,7 @@
 # Author(s): Ryan Minneo, Ryan Nguyen
 # This file contains the code that is used to manage quizzes,
 # such as being able to register new quizzes, edit existing quizzes, and delete quizzes if need be.
+import base64
 import datetime
 import io
 import smtplib
@@ -59,12 +60,27 @@ def quiz_editor():
     else:
         return render_template('prohibited.html')
 
+@website.route('/quiz_material', methods=['GET', 'POST'])
+def quiz_material():
+    quiz_id = request.args.get('id')
+
+    cursor = database.conn.cursor()
+    cursor.execute('SELECT MATERIAL_BYTES FROM TRAINING_MATERIALS WHERE QUIZ_ID=?', (quiz_id,))
+    result = cursor.fetchone()
+    imageBytes = result[0]
+    if imageBytes:
+        image_base64 = base64.b64encode(imageBytes).decode('utf-8')
+    else:
+        print("No image found")
+
+
+    return render_template('quiz_material.html', quiz_id = quiz_id, image_data = image_base64)
 
 
 @website.route('/take_quiz', methods=['GET'])
-def take_quiz():
+def take_quiz_route():
     # Retrieve quiz ID from the request URL
-    quiz_id = request.args.get('id')
+    quiz_id = request.args.get('quiz_id')
 
     # Connect to SQLite database
     conn = database.conn
@@ -164,10 +180,6 @@ def quiz_taking():
 
         database.conn.commit()
 
-
-
-
-
     # This redirects to the employee dashboard, I tried putting dashboard and it wouldn't let me so I did this.
     # Later this will redirect to another page where it'll display the score you got, if you get less than 100,
     # It will just contain a retry button, and if you get 100, there will be another button for returning to dashboard.
@@ -185,6 +197,7 @@ def quiz_editing():
             quiz_name = request.form['quiz_name']
             quiz_desc = request.form['quiz_desc']
             material_name = request.form['material_name']
+            is_visible = 1 if request.form.get('isVisible') == '1' else 0
 
             # Retrieve questions and answers dynamically
             questions = []
@@ -203,9 +216,9 @@ def quiz_editing():
                     questions.append(question)
 
             cursor = database.conn.cursor()
-            cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
-            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, 1, quiz_desc, 0))
-
+            if quiz_id != "None":
+                cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
+            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, is_visible, quiz_desc, 0))
 
             #Gets the ID from the quiz that was just created to upload that into the questions that are created.
             cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
@@ -213,8 +226,6 @@ def quiz_editing():
 
             cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
                            (session['id'], quizID))
-            # curr_attempt = (0 if cursor.fetchone() is None else cursor.fetchone()[0]) + 1
-
             recent_change = cursor.fetchone()
             curr_change = 1
             if recent_change[0] is not None:
@@ -244,12 +255,10 @@ def quiz_editing():
                     if file_data is not None:
                         cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',(material_name, file_data, quizID))
 
-
-
             # Commit changes to the database
             database.conn.commit()
 
-        return redirect(url_for('manage_quizzes'))
+            return redirect(url_for('manage_quizzes'))
     else:
         render_template('prohibited.html')
 
@@ -283,4 +292,3 @@ def editQuiz_route(quiz_id):
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
-
