@@ -93,6 +93,8 @@
         <h1>Create Quiz</h1>
 
         <form id="quizForm" action = "{{ url_for('quiz_editing') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name = "quiz_id" value = "{{ quiz_id }}">
+
             <label for="quiz_name">Quiz Name:</label><br>
             <input type="text" id="quizTitle" name="quiz_name" value="{{ request.args.get('quiz_name', '') }}"><br><br>
 

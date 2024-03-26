@@ -181,6 +181,7 @@ def quiz_editing():
         # Check if the quiz name, quiz description, and material name is inputted into their text boxes.
         if request.method == 'POST' and 'quiz_name' in request.form and 'quiz_desc' in request.form and 'material_name' in request.form:
             # Retrieve data from the HTML form
+            quiz_id = request.form['quiz_id']
             quiz_name = request.form['quiz_name']
             quiz_desc = request.form['quiz_desc']
             material_name = request.form['material_name']
@@ -202,6 +203,7 @@ def quiz_editing():
                     questions.append(question)
 
             cursor = database.conn.cursor()
+            cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
             cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, 1, quiz_desc, 0))
 
 
