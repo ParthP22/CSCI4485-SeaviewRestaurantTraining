@@ -246,7 +246,7 @@ def quiz_editing():
             # Commit changes to the database
             database.conn.commit()
 
-        return redirect(url_for('manage_quizzes'))
+            return redirect(url_for('manage_quizzes'))
     else:
         render_template('prohibited.html')
 
