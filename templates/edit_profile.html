@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile - Seaview Training{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Edit Profile</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="first-name">First Name:</label>
+                    <input type="text" id="first-name" name="first-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name:</label>
+                    <input type="text" id="last-name" name="last-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .btn-primary {
+        background-color: blue;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition: 0.3s;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background-color: darkblue;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    label {
+        margin-bottom: 5px;
+        display: block;
+    }
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+    }
+</style>
+{% endblock %}
