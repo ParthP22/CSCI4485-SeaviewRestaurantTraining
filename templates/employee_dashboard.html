@@ -76,7 +76,7 @@
             {% for quiz in quizzes %}
                 {% if quiz[5] == 1 and quiz[7] == 0 %}
                     <tr>
-                        <td> <a href="{{ url_for('take_quiz') }}?id={{ quiz[0] }}" class="nav-link" style="word-wrap: break-word">{{quiz[1]}} - {{quiz[6]}}</a> </td>
+                        <td> <a href="{{ url_for('quiz_material') }}?id={{ quiz[0] }}" class="nav-link" style="word-wrap: break-word">{{quiz[1]}} - {{quiz[6]}}</a> </td>
                     </tr>
                 {% endif %}
             {% endfor %}

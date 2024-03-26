@@ -6,6 +6,7 @@ import datetime
 import io
 import smtplib
 
+from PIL import Image
 from flask import Flask, render_template, redirect, url_for, session, request
 import database
 import send_reports
@@ -67,14 +68,21 @@ def quiz_material():
     cursor = database.conn.cursor()
     cursor.execute('SELECT MATERIAL_BYTES FROM TRAINING_MATERIALS WHERE QUIZ_ID=?', (quiz_id,))
     result = cursor.fetchone()
-    imageBytes = result[0]
-    if imageBytes:
-        image_base64 = base64.b64encode(imageBytes).decode('utf-8')
+
+    if result:
+        image_bytes = result[0]
+
+        # Save the image to a temporary file
+        temp_image_path = 'static/quiz_material.jpeg'
+        with open(temp_image_path, 'wb') as f:
+            f.write(image_bytes)
+
+        f.close()
+
+        return render_template('quiz_material.html', quiz_id=quiz_id, image_path=temp_image_path)
     else:
-        print("No image found")
-
-
-    return render_template('quiz_material.html', quiz_id = quiz_id, image_data = image_base64)
+        # Handle case where no image is found
+        return render_template('quiz_material.html', quiz_id=quiz_id, image_path=None)
 
 
 @website.route('/take_quiz', methods=['GET'])
@@ -164,8 +172,8 @@ def quiz_taking():
                                'VALUES(?,?,?,?,?,?) ',
                                (curr_attempt, session['id'], quiz_id, question_id, question[7], 0))
 
-        cursor.execute("UPDATE QUIZZES SET TOTAL_CORRECT = TOTAL_CORRECT + ? WHERE QUIZ_ID=?", (int(totalCorrect), int(quiz_id)))
-        cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect), int(quiz_id)))
+        cursor.execute("UPDATE QUIZZES SET TOTAL_CORRECT = TOTAL_CORRECT + ? WHERE QUIZ_ID=?", (int(totalCorrect), int(quiz_id),))
+        cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect), int(quiz_id),))
 
         database.conn.commit()
 
@@ -252,6 +260,7 @@ def quiz_editing():
                 if 'file' in request.files:
                     file = request.files['file']
                     file_data = file.read() # Assign value to file_data variable if 'file' is present
+
                     if file_data is not None:
                         cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',(material_name, file_data, quizID))
 
