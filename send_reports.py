@@ -18,13 +18,14 @@ from routes import website
 
 # This is for after you submit a quiz
 def send_report():
+
     pass
 
 # This is for the manager dashboard
 @website.route('/progress_report/<int:user_id>', methods=['GET'])
 def send_report(user_id):
     cursor = database.conn.cursor()
-    cursor.execute('SELECT m.EMAIL FROM USERS u LEFT JOIN USERS m on u.MANAGER_ID = m.ID WHERE u.ID=? ',(user_id,))
+    cursor.execute('SELECT EMAIL FROM USERS WHERE ID=? ',(user_id,))
     manager_email = cursor.fetchone()[0]
 
     create_double_bar_graph(user_id)
