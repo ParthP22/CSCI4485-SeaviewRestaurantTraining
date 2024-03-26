@@ -18,6 +18,7 @@ from historyLog import *
 from profile_page import *
 from quiz_log import *
 from quiz_trends import *
+from send_reports import *
 
 
 

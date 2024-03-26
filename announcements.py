@@ -8,6 +8,7 @@ from flask import Flask, render_template, redirect, url_for, session, request
 import database, smtplib, ssl, credentials, datetime
 from routes import website
 
+# This one is used for the announcements function
 def send_mail(subject, body):
     cursor = database.conn.cursor()
     cursor.execute('SELECT Email FROM Users WHERE ID >= 1 AND ID <= 4')
@@ -28,6 +29,7 @@ def send_mail(subject, body):
             server.login(sender_email, password)
             server.sendmail(sender_email, receiver_email, message)
     print("Email sent successfully")
+
 
 
 @website.route('/announcements', methods=['GET', 'POST'])
@@ -63,4 +65,5 @@ def announcements():
         cursor.execute('SELECT SUBJECT,MESSAGE,DATE_TIME FROM ANNOUNCEMENTS ORDER BY MESSAGE_ID DESC')
         emails = cursor.fetchall()
         return render_template('announcements_history.html', emails=emails)
+
 

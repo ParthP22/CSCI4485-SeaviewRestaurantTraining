@@ -55,7 +55,33 @@ def render_employee_dashboard(account, cursor):
                    '(SELECT DISTINCT QUIZ_ID FROM ATTEMPT_HISTORY_LOG WHERE IS_COMPLETED=1 AND EMPLOYEE_ID=?) ', (session['id'],))
     quizzes = cursor.fetchall()
 
-    return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions, quizzes=quizzes, percent=percent)
+    cursor.execute('SELECT QUIZ_ID, QUIZ_NAME FROM QUIZZES ')
+
+    quiz_list = []
+
+    for _, quiz in cursor.fetchall():
+        if quiz is not None:
+            quiz_list.append(quiz)
+
+
+    cursor.execute('SELECT NUM_CORRECT, NUM_INCORRECT, MAX(ATTEMPT_NUMBER) '
+                   'FROM ATTEMPT_HISTORY_LOG '
+                   'WHERE QUIZ_ID IN (SELECT DISTINCT QUIZ_ID FROM QUIZZES WHERE EMPLOYEE_ID=?) '
+                   'GROUP BY QUIZ_ID ', (session['id'],))
+
+    num_correct = []
+    num_incorrect = []
+    for correct, incorrect, _ in cursor.fetchall():
+        if correct is not None:
+            num_correct.append(correct)
+        else:
+            num_correct.append(0)
+        if incorrect is not None:
+            num_incorrect.append(incorrect)
+        else:
+            num_incorrect.append(0)
+
+    return render_template('employee_dashboard.html', progress=total_correct, total_questions=total_questions, quizzes=quizzes, percent=percent, num_correct=num_correct, num_incorrect=num_incorrect, quiz_list=quiz_list)
 
 @website.route('/dashboard', methods=['GET', 'POST'])
 def authenticate_user():
@@ -85,7 +111,8 @@ def authenticate_user():
             session['logged_in'] = True
             session['username'] = username
             session['password'] = password
-            if account[6] == 1 or account[6] == 2:
+            session['role'] = account[6]
+            if session['role'] == 1 or session['role'] == 2:
                 #Admin
                 return render_template('manager_dashboard.html', msg=msg)
             else:
