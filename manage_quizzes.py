@@ -78,9 +78,9 @@ def quiz_material():
 
 
 @website.route('/take_quiz', methods=['GET'])
-def take_quiz():
+def take_quiz_route():
     # Retrieve quiz ID from the request URL
-    quiz_id = request.args.get('id')
+    quiz_id = request.args.get('quiz_id')
 
     # Connect to SQLite database
     conn = database.conn

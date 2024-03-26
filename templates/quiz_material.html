@@ -72,15 +72,17 @@
 
     <img src="data:image/jpeg;base64,{{ image_data }}" alt="Your Image">
 
-    <button type="button" onclick="next({{ quiz_id }})" style="background-color: #007bff;">Continue</button>
+    <a href="/take_quiz?quiz_id={{ quiz_id }}"  >Continue</a>
+
+    <!-- <button type="submit" onclick="next(request.args.get('quiz_id'))" style="background-color: #007bff;">Continue</button> -->
 
     <div class="back-button">
         <button onclick="goBack()">Go Back</button>
     </div>
 
     <script>
-    function next(id) {
-        window.location.href = "take_quiz?id=", id;
+    function next(quiz_id) {
+        window.location.href = "take_quiz/?id=", quiz_id;
     }
 
     function goBack() {
