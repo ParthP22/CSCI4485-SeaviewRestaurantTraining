@@ -25,6 +25,20 @@
             background-color: #e0e0e0;
         }
     </style>
+<style>
+    .core-container {
+    display: flex;
+    }
+
+    .quiz-list {
+        flex: 1;
+    }
+
+    .quiz-chart {
+        flex: 1;
+        margin-left: 20px;
+    }
+</style>
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="col-md-auto">
@@ -49,8 +63,9 @@
 <!--Note from Parth to the Ryans: you're gonna need to put the route of your quiz taking function for href.
     Look at the HTML code that Pranjal did on base.html, where she created the header for "Home", "Contact", "Logout"
     if you need an example.-->
-    <div style="width: 500px; text-align: left; padding: 30px">
-
+<!--    <div style="width: 500px; text-align: left; padding: 30px">-->
+<div class="container core-container">
+    <div class="quiz-list">
     <table class="display" id="quiz_table" width="100%">
         <thead>
             <tr>
@@ -67,30 +82,44 @@
             {% endfor %}
         </tbody>
     </table>
-    <canvas id="doubleBarChart" width="10000" height="10000"></canvas>
+    </div>
+    <div class="quiz-chart"><canvas id="doubleBarChart" width="600" height="600"></canvas></div>
 
     <script>
+        const quizNames = JSON.parse('{{ quiz_list | tojson | safe }}')
+        const numCorrect = JSON.parse('{{ num_correct | tojson | safe }}')
+        const numIncorrect = JSON.parse('{{ num_incorrect | tojson | safe }}')
+
         var data = {
-            labels: {{ quizzes | safe }},
+            labels: quizNames,
             datasets: [
                 {
                     label: 'Number of Correct',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(0, 230, 0, 0.5)',
+                    borderColor: 'rgba(0, 230, 0, 0.5)',
                     borderWidth: 1,
-                    data: {{ num_correct | safe }}
+                    data: numCorrect
                 },
                 {
                     label: 'Number of Incorrect',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(230, 0, 0, 0.5)',
+                    borderColor: 'rgba(230, 0, 0, 0.5)',
                     borderWidth: 1,
-                    data: {{ num_incorrect | safe }}
+                    data: numIncorrect
                 }
             ]
         };
 
         var options = {
+            plugins: {
+                title: {
+                    display: true,
+                    text: `Your Progress For Each Quiz`,
+                    font: {
+                        size: 30
+                    }
+                }
+            },
             scales: {
                 yAxes: [{
                     ticks: {
@@ -109,6 +138,9 @@
             options: options
         });
     </script>
-    </div>
+<!--    </div>-->
+</div>
     <!-- Add home page content here -->
 {% endblock %}
+
+

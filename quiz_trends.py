@@ -6,6 +6,46 @@ from flask import Flask, render_template, redirect, url_for, session, request
 import database
 from routes import website
 
-@website.route('/quiz_trends')
+@website.route('/quiz_trends', methods=['GET', 'POST'])
 def quiz_trends():
-    render_template('quiz_trends.html')
+
+    cursor = database.conn.cursor()
+
+    cursor.execute('SELECT QUIZ_ID, QUIZ_NAME '
+                   'FROM QUIZZES ')
+    query = cursor.fetchall()
+    quiz_names = []
+    quiz_ids = []
+
+    if query is not None:
+        for row in query:
+            quiz_ids.append(row[0])
+            quiz_names.append(row[1])
+
+
+    quizzes = []
+
+    for quiz_id in quiz_ids:
+        quiz_data = []
+        quiz_questions = []
+        num_correct = []
+        num_incorrect = []
+        cursor.execute('SELECT QUESTION, NUM_CORRECT, NUM_INCORRECT '
+                       'FROM QUESTIONS ques JOIN QUIZZES quiz ON ques.QUIZ_ID = quiz.QUIZ_ID '
+                       'WHERE ques.QUIZ_ID=? ', (quiz_id,))
+        query = cursor.fetchall()
+        if query is not None:
+
+            for row in query:
+
+                quiz_questions.append(row[0])
+                num_correct.append(row[1])
+                num_incorrect.append(row[2])
+            quiz_data.append(quiz_questions)
+            quiz_data.append(num_correct)
+            quiz_data.append(num_incorrect)
+
+        quizzes.append(quiz_data)
+
+
+    return render_template('quiz_trends.html', quizzes=quizzes, quiz_names=quiz_names)
