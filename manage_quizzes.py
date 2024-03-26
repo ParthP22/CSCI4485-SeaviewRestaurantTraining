@@ -185,6 +185,7 @@ def quiz_editing():
             quiz_name = request.form['quiz_name']
             quiz_desc = request.form['quiz_desc']
             material_name = request.form['material_name']
+            is_visible = 1 if request.form.get('isVisible') == '1' else 0
 
             # Retrieve questions and answers dynamically
             questions = []
@@ -203,9 +204,9 @@ def quiz_editing():
                     questions.append(question)
 
             cursor = database.conn.cursor()
-            cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
-            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, 1, quiz_desc, 0))
-
+            if quiz_id != "None":
+                cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
+            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, is_visible, quiz_desc, 0))
 
             #Gets the ID from the quiz that was just created to upload that into the questions that are created.
             cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
@@ -213,8 +214,6 @@ def quiz_editing():
 
             cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
                            (session['id'], quizID))
-            # curr_attempt = (0 if cursor.fetchone() is None else cursor.fetchone()[0]) + 1
-
             recent_change = cursor.fetchone()
             curr_change = 1
             if recent_change[0] is not None:
@@ -243,8 +242,6 @@ def quiz_editing():
                     file_data = file.read() # Assign value to file_data variable if 'file' is present
                     if file_data is not None:
                         cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',(material_name, file_data, quizID))
-
-
 
             # Commit changes to the database
             database.conn.commit()
@@ -283,4 +280,3 @@ def editQuiz_route(quiz_id):
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
-
