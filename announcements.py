@@ -51,7 +51,10 @@ def announcements():
             send_mail(subject, body)
             status = "Email sent successfully"
             cursor.execute('SELECT MAX(MESSAGE_ID) FROM ANNOUNCEMENTS')
-            curr_message_id = cursor.fetchone()[0]
+            query = cursor.fetchone()
+            curr_message_id = 0
+            if query[0] is not None:
+                curr_message_id = query[0]
             cursor.execute('INSERT INTO ANNOUNCEMENTS(MESSAGE_ID, SUBJECT, MESSAGE, DATE_TIME) VALUES (?, ?, ?, ?)', (curr_message_id + 1,subject,body,datetime.datetime.now(),))
             database.conn.commit()
             # return redirect(url_for('announcements'))
