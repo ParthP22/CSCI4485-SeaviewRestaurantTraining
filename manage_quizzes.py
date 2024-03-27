@@ -109,7 +109,12 @@ def quiz_taking():
         cursor = database.conn.cursor()
         cursor.execute("SELECT * FROM questions WHERE quiz_id = ?", (quiz_id,))
         questions = cursor.fetchall()
-        cursor.close()
+
+        cursor.execute("SELECT MAX(ATTEMPT_ID) FROM ATTEMPT_HISTORY_LOG ")
+        query = cursor.fetchone()
+        latest_attempt_id = 0
+        if query is not None:
+            latest_attempt_id = query[0]
 
         #Creates an array of inputted answers. You don't even need this to be honest, but if you want all the answers in one array, here ya go
         inputtedAnswers = {}
@@ -138,7 +143,7 @@ def quiz_taking():
 
                 # Records the submission for this question on this specific attempt into the RESULTS table
                 cursor.execute('INSERT INTO RESULTS(ATTEMPT_ID,EMPLOYEE_ID,QUIZ_ID,QUESTION_ID,ANSWER,IS_CORRECT)'
-                               'VALUES(?,?,?,?,?,?) ', (curr_attempt, session['id'], quiz_id,question_id,question[7],1))
+                               'VALUES(?,?,?,?,?,?) ', (latest_attempt_id+1, session['id'], quiz_id,question_id,question[7],1))
             else:
                 totalIncorrect += 1
                 cursor.execute("UPDATE QUESTIONS SET NUM_INCORRECT = NUM_INCORRECT + 1 WHERE QUESTION_ID=?", (int(question_id),))
@@ -146,17 +151,27 @@ def quiz_taking():
                 # Records the submission for this question on this specific attempt into the RESULTS table
                 cursor.execute('INSERT INTO RESULTS(ATTEMPT_ID,EMPLOYEE_ID,QUIZ_ID,QUESTION_ID,ANSWER,IS_CORRECT)'
                                'VALUES(?,?,?,?,?,?) ',
-                               (curr_attempt, session['id'], quiz_id, question_id, question[7], 0))
+                               (latest_attempt_id+1, session['id'], quiz_id, question_id, question[7], 0))
 
-        cursor.execute("UPDATE QUIZZES SET TOTAL_CORRECT = TOTAL_CORRECT + ? WHERE QUIZ_ID=?", (int(totalCorrect), int(quiz_id)))
-        cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect), int(quiz_id)))
+        prev_attempt = (0,0,0)
+        cursor.execute("SELECT MAX(ATTEMPT_NUMBER), NUM_CORRECT, NUM_INCORRECT "
+                       "FROM ATTEMPT_HISTORY_LOG "
+                       "WHERE EMPLOYEE_ID = ? AND QUIZ_ID = ?", (session['id'],quiz_id))
+        query = cursor.fetchone()
+
+        if query[0] is not None:
+            prev_attempt = (query[0], query[1], query[2])
+
+
+        cursor.execute("UPDATE QUIZZES SET TOTAL_CORRECT = TOTAL_CORRECT + ? WHERE QUIZ_ID=?", (int(totalCorrect-prev_attempt[1]), int(quiz_id),))
+        cursor.execute("UPDATE QUIZZES SET TOTAL_INCORRECT = TOTAL_INCORRECT + ? WHERE QUIZ_ID=?", (int(totalIncorrect-prev_attempt[2]), int(quiz_id),))
 
         database.conn.commit()
 
 
 
-        cursor.execute("INSERT INTO ATTEMPT_HISTORY_LOG(ATTEMPT_ID,EMPLOYEE_ID,QUIZ_ID,ATTEMPT_NUMBER,DATE_TIME,IS_COMPLETED,NUM_CORRECT,NUM_INCORRECT)"
-                       "VALUES(?,?,?,?,?,?,?,?)", (None,session['id'],quiz_id,curr_attempt,datetime.datetime.now(), 1 if totalIncorrect == 0 else 0, totalCorrect, totalIncorrect,))
+        cursor.execute("INSERT INTO ATTEMPT_HISTORY_LOG(ATTEMPT_ID,EMPLOYEE_ID,QUIZ_ID,ATTEMPT_NUMBER,DATE_TIME,IS_COMPLETED,NUM_CORRECT,NUM_INCORRECT) "
+                       "VALUES(?,?,?,?,?,?,?,?) ", (latest_attempt_id+1,session['id'],quiz_id,curr_attempt,datetime.datetime.now(), 1 if totalIncorrect == 0 else 0, totalCorrect, totalIncorrect,))
 
 
 

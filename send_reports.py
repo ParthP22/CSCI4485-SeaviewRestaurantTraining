@@ -17,16 +17,34 @@ from routes import website
 
 
 # This is for after you submit a quiz
-def send_report():
+def quiz_submission_report(user_id, attempt_id):
+    cursor = database.conn.cursor()
+    cursor.execute('SELECT FIRST_NAME, LAST_NAME FROM USERS WHERE ID = ? ', (user_id,))
+    query = cursor.fetchone()
+    first_name, last_name = query[1], query[2]
 
+    cursor.execute('SELECT QUIZ_ID, QUESTION_ID, ANSWER, CORRECT '
+                   'FROM RESULTS '
+                   'WHERE ATTEMPT_ID = ? ', (attempt_id,))
+
+    
+
+    pass
+
+def send_quiz_report():
     pass
 
 # This is for the manager dashboard
 @website.route('/progress_report/<int:user_id>', methods=['GET'])
 def send_report(user_id):
     cursor = database.conn.cursor()
-    cursor.execute('SELECT EMAIL FROM USERS WHERE ID=? ',(user_id,))
+    cursor.execute('SELECT EMAIL FROM USERS WHERE ID=? ',(session['id'],))
     manager_email = cursor.fetchone()[0]
+
+    cursor.execute('SELECT FIRST_NAME, LAST_NAME FROM USERS WHERE ID=?', (user_id,))
+    query = cursor.fetchone()
+    first_name = query[0]
+    last_name = query[1]
 
     create_double_bar_graph(user_id)
 
@@ -35,14 +53,13 @@ def send_report(user_id):
 
     if manager_email is not None:
 
-        subject="Test Report"
-        body="Testing"
-        send_mail(subject,body,manager_email)
+        subject=f"{first_name} {last_name}'s Progress Report"
+        body=f"Attached below is an image displaying a bar graph of {first_name} {last_name}'s progress."
+        send_progress_report(subject,body,manager_email)
     return redirect('/manage_employee')
 
 def create_double_bar_graph(user_id):
     cursor = database.conn.cursor()
-    query = cursor.fetchall()
 
     cursor.execute('SELECT FIRST_NAME, LAST_NAME FROM USERS WHERE ID=?',(user_id,))
     query = cursor.fetchone()
@@ -66,8 +83,8 @@ def create_double_bar_graph(user_id):
     bar_width = 0.25
     x = np.arange(len(quiz_names))
 
-    plt.bar(x - bar_width / 2, correct, bar_width, label='Correct')
-    plt.bar(x + bar_width / 2, incorrect, bar_width, label='Incorrect')
+    plt.bar(x - bar_width / 2, correct, bar_width, label='Correct', color="green")
+    plt.bar(x + bar_width / 2, incorrect, bar_width, label='Incorrect', color="red")
 
     plt.xlabel('Quizzes')
     plt.ylabel('Num Of Answers')
@@ -86,7 +103,7 @@ def create_double_bar_graph(user_id):
 
 
 # This one is used for the report function
-def send_mail(subject, body, recipient_email):
+def send_progress_report(subject, body, recipient_email):
 
     port = 587
     smtp_server = "smtp.office365.com"

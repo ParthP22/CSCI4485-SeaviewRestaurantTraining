@@ -12,7 +12,8 @@ def quiz_trends():
     cursor = database.conn.cursor()
 
     cursor.execute('SELECT QUIZ_ID, QUIZ_NAME '
-                   'FROM QUIZZES ')
+                   'FROM QUIZZES '
+                   'WHERE IS_DELETED = 0 ')
     query = cursor.fetchall()
     quiz_names = []
     quiz_ids = []
@@ -32,7 +33,7 @@ def quiz_trends():
         num_incorrect = []
         cursor.execute('SELECT QUESTION, NUM_CORRECT, NUM_INCORRECT '
                        'FROM QUESTIONS ques JOIN QUIZZES quiz ON ques.QUIZ_ID = quiz.QUIZ_ID '
-                       'WHERE ques.QUIZ_ID=? ', (quiz_id,))
+                       'WHERE ques.QUIZ_ID=? AND quiz.IS_DELETED=0 ', (quiz_id,))
         query = cursor.fetchall()
         if query is not None:
 
