@@ -30,7 +30,7 @@ def render_employee_dashboard(account, cursor):
     total_correct = 0
     total_questions = 0
 
-    cursor.execute('SELECT TOTAL_QUESTIONS FROM QUIZZES ')
+    cursor.execute('SELECT TOTAL_QUESTIONS FROM QUIZZES WHERE IS_DELETED IS NOT 1 ')
     query = cursor.fetchall()
 
     if query is not None:
@@ -73,9 +73,10 @@ def render_employee_dashboard(account, cursor):
             quiz_list.append(quiz)
 
 
+
     cursor.execute('SELECT NUM_CORRECT, NUM_INCORRECT, MAX(ATTEMPT_NUMBER) '
                    'FROM ATTEMPT_HISTORY_LOG '
-                   'WHERE EMPLOYEE_ID=? AND QUIZ_ID IN (SELECT DISTINCT QUIZ_ID FROM QUIZZES) '
+                   'WHERE EMPLOYEE_ID=? AND QUIZ_ID IN (SELECT DISTINCT QUIZ_ID FROM QUIZZES WHERE IS_DELETED IS NOT 1) '
                    'GROUP BY QUIZ_ID ', (session['id'],))
 
     num_correct = []
