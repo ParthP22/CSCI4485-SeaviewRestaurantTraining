@@ -25,9 +25,17 @@ def render_employee_dashboard(account, cursor):
                    'WHERE EMPLOYEE_ID=? AND QUIZ_ID IN (SELECT QUIZ_ID FROM QUIZZES WHERE IS_DELETED=0)'
                    'GROUP BY QUIZ_ID',
                    (account[0],))
+
     recent_attempts = cursor.fetchall()
     total_correct = 0
     total_questions = 0
+
+    cursor.execute('SELECT TOTAL_QUESTIONS FROM QUIZZES ')
+    query = cursor.fetchall()
+
+    if query is not None:
+        for row in query:
+            total_questions += row[0]
     # cursor.execute('SELECT QUIZ_ID FROM QUIZZES')
     # total_quizzes = cursor.fetchall()
     # total_correct = 0
@@ -41,10 +49,11 @@ def render_employee_dashboard(account, cursor):
     #         total_correct += progress[0]
     #         total_questions += progress[0] + progress[1]
 
+
     if recent_attempts is not None:
         for attempt in recent_attempts:
             total_correct += attempt[0]
-            total_questions += attempt[0] + attempt[1]
+
     if total_questions == 0:
         percent = 0
     else:
@@ -55,7 +64,7 @@ def render_employee_dashboard(account, cursor):
                    '(SELECT DISTINCT QUIZ_ID FROM ATTEMPT_HISTORY_LOG WHERE IS_COMPLETED=1 AND EMPLOYEE_ID=?) ', (session['id'],))
     quizzes = cursor.fetchall()
 
-    cursor.execute('SELECT QUIZ_ID, QUIZ_NAME FROM QUIZZES ')
+    cursor.execute('SELECT QUIZ_ID, QUIZ_NAME FROM QUIZZES WHERE IS_DELETED IS NOT 1 ')
 
     quiz_list = []
 
@@ -66,7 +75,7 @@ def render_employee_dashboard(account, cursor):
 
     cursor.execute('SELECT NUM_CORRECT, NUM_INCORRECT, MAX(ATTEMPT_NUMBER) '
                    'FROM ATTEMPT_HISTORY_LOG '
-                   'WHERE QUIZ_ID IN (SELECT DISTINCT QUIZ_ID FROM QUIZZES WHERE EMPLOYEE_ID=?) '
+                   'WHERE EMPLOYEE_ID=? AND QUIZ_ID IN (SELECT DISTINCT QUIZ_ID FROM QUIZZES) '
                    'GROUP BY QUIZ_ID ', (session['id'],))
 
     num_correct = []
