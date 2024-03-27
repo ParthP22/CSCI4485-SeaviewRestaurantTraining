@@ -65,7 +65,7 @@ def create_double_bar_graph(user_id):
 
     cursor.execute('SELECT QUIZ_NAME, NUM_CORRECT, NUM_INCORRECT, MAX(ATTEMPT_NUMBER) FROM ATTEMPT_HISTORY_LOG ah '
                    'RIGHT JOIN QUIZZES q ON ah.QUIZ_ID = q.QUIZ_ID '
-                   'WHERE EMPLOYEE_ID=?'
+                   'WHERE EMPLOYEE_ID=? AND q.IS_DELETED IS NOT 1 '
                    'GROUP BY q.QUIZ_ID ', (user_id,))
     query = cursor.fetchall()
     correct = []
