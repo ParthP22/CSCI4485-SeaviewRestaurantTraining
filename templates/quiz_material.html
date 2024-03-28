@@ -70,13 +70,8 @@
     <h1>{{ quiz_name }}</h1>
     <p>{{ quiz_desc }}</p>
 
-    {% if image_path %}
     <!-- Display the image if it exists -->
-    <img src="{{ url_for('static', filename=image_path) }}">
-    {% else %}
-    <!-- Display a placeholder message if no image is found -->
-    <p>No image found for this quiz.</p>
-    {% endif %}
+    <img src="data:image/jpeg;base64,{{ image_data }}" alt="Your Image">
 
     <a href="/take_quiz?quiz_id={{ quiz_id }}"  >Continue</a>
 
