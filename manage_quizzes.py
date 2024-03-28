@@ -71,18 +71,13 @@ def quiz_material():
 
     if result:
         image_bytes = result[0]
-
+        image_base64 = base64.b64encode(image_bytes).decode('utf-8')
         # Save the image to a temporary file
-        temp_image_path = 'static/quiz_material.jpeg'
-        with open(temp_image_path, 'wb') as f:
-            f.write(image_bytes)
-
-        f.close()
-
-        return render_template('quiz_material.html', quiz_id=quiz_id, image_path=temp_image_path)
     else:
-        # Handle case where no image is found
-        return render_template('quiz_material.html', quiz_id=quiz_id, image_path=None)
+        image_base64 = None
+
+
+    return render_template('quiz_material.html', quiz_id=quiz_id, image_data=image_base64)
 
 
 @website.route('/take_quiz', methods=['GET'])
@@ -289,14 +284,22 @@ def quiz_editing():
 
             # Retrieve data for pdf images
             # Handle file upload
-            if request.method == 'POST':
-                # Check if the file is present in the request
-                if 'file' in request.files:
-                    file = request.files['file']
-                    file_data = file.read() # Assign value to file_data variable if 'file' is present
-
-                    if file_data is not None:
-                        cursor.execute('INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',(material_name, file_data, quizID))
+            file = request.files.get('file')  # Simplified file retrieval
+            if file and file.filename != '':
+                file_data = file.read()
+                if file_data:
+                    cursor.execute(
+                        'INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',
+                        (material_name, file_data, quizID))
+            else:
+                # If no new file is uploaded, reuse existing file data
+                material = cursor.execute(
+                    "SELECT MATERIAL_NAME, MATERIAL_BYTES FROM TRAINING_MATERIALS WHERE QUIZ_ID = ?",
+                    (quiz_id,)).fetchone()
+                if material:
+                    cursor.execute(
+                        'INSERT INTO TRAINING_MATERIALS (MATERIAL_NAME, MATERIAL_BYTES, QUIZ_ID) VALUES (?, ?, ?)',
+                        (material[0], material[1], quizID))
 
             # Commit changes to the database
             database.conn.commit()
