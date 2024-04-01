@@ -13,4 +13,4 @@ from routes import website
 
 
 if __name__ == '__main__':
-    website.run(debug=True)
+    website.run(debug=True, host='192.168.0.24')
