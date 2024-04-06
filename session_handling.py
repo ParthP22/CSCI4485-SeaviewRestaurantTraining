@@ -99,7 +99,13 @@ def authenticate_user():
     # Check if "username" and "password" POST requests exist (user submitted form)
     account = None
     cursor = database.conn.cursor()
-
+    if 'logged_in' in session:
+        cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (session['username'], session['password']))
+        account = cursor.fetchone()
+        if account[6]  == 1 or account[6] == 2:
+            return render_template('manager_dashboard.html')
+        else:
+            return render_employee_dashboard(account, cursor)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['username']
