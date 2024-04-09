@@ -99,14 +99,13 @@ def authenticate_user():
     # Check if "username" and "password" POST requests exist (user submitted form)
     account = None
     cursor = database.conn.cursor()
-
     if 'logged_in' in session:
-        cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (session['username'],session['password']))
+        cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (session['username'], session['password']))
         account = cursor.fetchone()
-        if account[6] == 1 or account[6] == 2:
+        if account[6]  == 1 or account[6] == 2:
             return render_template('manager_dashboard.html')
         else:
-            return render_employee_dashboard(account,cursor)
+            return render_employee_dashboard(account, cursor)
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         # Create variables for easy access
         username = request.form['username']
@@ -122,6 +121,10 @@ def authenticate_user():
             session['username'] = username
             session['password'] = password
             session['role'] = account[6]
+            session['restricted'] = account[8]
+            if session['restricted'] == 1:
+                msg = 'Account is restricted'
+                return ('Account is restricted')
             if session['role'] == 1 or session['role'] == 2:
                 #Admin
                 return render_template('manager_dashboard.html', msg=msg)
@@ -134,3 +137,5 @@ def authenticate_user():
             msg = 'Incorrect username/password!'
     # Show the login form with message (if any)
     return render_template('index.html', msg=msg)
+
+

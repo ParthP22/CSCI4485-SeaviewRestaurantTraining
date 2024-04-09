@@ -4,6 +4,7 @@
 
 import re
 import smtplib
+import sqlite3
 import ssl
 
 from flask import Flask, render_template, redirect, url_for, session, request
@@ -49,8 +50,8 @@ def registration():
         password = request.form['password']
         email = request.form['email']
         role_id = request.form.get('role')
+        isRestricted = 0
 
-        # Check if account exists using MySQL
         cursor = database.conn.cursor()
         cursor.execute('SELECT * FROM Users WHERE Username=?', (username,))
         account = cursor.fetchone()
@@ -65,8 +66,8 @@ def registration():
             msg = 'Please fill out the form!'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cursor.execute('INSERT INTO Users (username, first_name, last_name, password, email, role_id) VALUES ( ?, ?, ?, ?, ?, ?)',
-                           (username, first_name, last_name, password, email, role_id))
+            cursor.execute('INSERT INTO Users (username, first_name, last_name, password, email, role_id, IsRestricted) VALUES ( ?, ?, ?, ?, ?, ?, ?)',
+                           (username, first_name, last_name, password, email, role_id, isRestricted))
             database.conn.commit()
             msg = 'You have successfully registered!'
 
@@ -90,3 +91,15 @@ def delete_item(item_id):
 def delete_route(item_id):
     delete_item(item_id)
     return redirect(url_for('manage_employee'))
+
+@website.route('/restrict/<int:item_id>', methods=['GET'])
+def restrict_route(item_id):
+    restrict_account(item_id)
+    return redirect(url_for('manage_employee'))
+
+def restrict_account(item_id):
+    with sqlite3.connect('./Seaview_DB.db') as conn:
+        cursor = conn.cursor()
+        value = 1
+        cursor.execute("UPDATE Users SET IsRestricted = ? WHERE id = ?", (value, item_id,))
+        conn.commit()
