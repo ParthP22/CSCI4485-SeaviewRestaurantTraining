@@ -22,9 +22,12 @@ def manage_quizzes():
     if session['role'] == 1 or session['role'] == 2:
         cursor = database.conn.cursor()
 
+        current_datetime = datetime.datetime.now()
+        formatted_current_datetime = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+
         cursor.execute('SELECT * FROM QUIZZES')
         quizzes = cursor.fetchall()
-        return render_template('manage_quizzes.html', quizzes = quizzes)
+        return render_template('manage_quizzes.html', quizzes = quizzes, current_date = formatted_current_datetime)
     else:
         return render_template('prohibited.html')
 
