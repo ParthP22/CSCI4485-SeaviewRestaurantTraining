@@ -1,4 +1,4 @@
-# Author(s): Parth Patel
+# Author(s): Parth Patel, Ahmed Malik
 # This file contains the code that is used to view the quiz history log,
 
 
