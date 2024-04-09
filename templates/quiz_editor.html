@@ -146,6 +146,9 @@
             <label for="isVisible">Visibility:</label><br>
             <input type="checkbox" id="isVisible" name="isVisible" value="1"><br><br>
 
+            <label for="due_date">Enter the due date:</label>
+            <input type="datetime-local" id="due_date" name="due_date">
+
             <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
 
             {% if request.args.get('quiz_id') %} <input type="submit" onclick="editQuiz(request.args.get('quiz_id'))">

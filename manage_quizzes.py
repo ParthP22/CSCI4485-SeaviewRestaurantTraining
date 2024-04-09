@@ -235,6 +235,7 @@ def quiz_editing():
             quiz_desc = request.form['quiz_desc']
             material_name = request.form['material_name']
             is_visible = 1 if request.form.get('isVisible') == '1' else 0
+            due_date = request.form['due_date']
 
             # Retrieve questions and answers dynamically
             questions = []
@@ -255,7 +256,7 @@ def quiz_editing():
             cursor = database.conn.cursor()
             if quiz_id != "None":
                 cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
-            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED) VALUES (?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, is_visible, quiz_desc, 0))
+            cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED, DUE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, is_visible, quiz_desc, 0, due_date))
 
             #Gets the ID from the quiz that was just created to upload that into the questions that are created.
             cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
