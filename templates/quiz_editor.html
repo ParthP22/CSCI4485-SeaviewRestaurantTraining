@@ -144,10 +144,10 @@
             </div>
 
             <label for="isVisible">Visibility:</label><br>
-            <input type="checkbox" id="isVisible" name="isVisible" value="1"><br><br>
+            <input type="checkbox" id="isVisible" name="isVisible" value="1" {% if request.args.get('is_Visible') == '1' %} checked {% endif %}><br><br>
 
             <label for="due_date">Enter the due date:</label>
-            <input type="datetime-local" id="due_date" name="due_date">
+            <input type="datetime-local" id="due_date" name="due_date" value="{{ request.args.get('due_Date', '') }}">
 
             <button type="button" onclick="addQuestion()" style="background-color: #007bff;">Add Question</button>
 
