@@ -70,13 +70,19 @@
         <thead>
             <tr>
                 <th>Quizzes</th>
+                <th>Due Dates</th>
             </tr>
         </thead>
         <tbody>
             {% for quiz in quizzes %}
                 {% if quiz[5] == 1 and quiz[7] == 0 %}
                     <tr>
-                        <td> <a href="{{ url_for('quiz_material') }}?id={{ quiz[0] }}" class="nav-link" style="word-wrap: break-word">{{quiz[1]}} - {{quiz[6]}}</a> </td>
+                        <td> <a href="{{ url_for('quiz_material') }}?id={{ quiz[0] }}" class="nav-link" style="word-wrap: break-word">{{quiz[1]}} - {{quiz[6]}} </a> </td>
+                        {% if quiz[8] > current_date %}
+                            <td class="not-past-due">{{ quiz[8] }}</td>
+                        {% else %}
+                            <td class="past-due">{{ quiz[8] }}</td>
+                        {% endif %}
                     </tr>
                 {% endif %}
             {% endfor %}
