@@ -71,7 +71,9 @@
     <p>{{ quiz_desc }}</p>
 
     <!-- Display the image if it exists -->
-    <img src="data:image/jpeg;base64,{{ image_data }}" alt="Your Image">
+    <iframe src="data:application/pdf;base64,{{ image_data }}" width="100%" height="600px">
+        <p>Alternative text - include a link <a href="data:application/pdf;base64,{{ image_data }}">to the PDF!</a></p>
+    </iframe>
 
     <a href="/take_quiz?quiz_id={{ quiz_id }}"  >Continue</a>
 
