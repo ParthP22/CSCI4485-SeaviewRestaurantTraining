@@ -102,7 +102,7 @@ def authenticate_user():
     if 'logged_in' in session:
         cursor.execute('SELECT * FROM Users WHERE Username=? AND Password=?', (session['username'], session['password']))
         account = cursor.fetchone()
-        if account[6]  == 1 or account[6] == 2:
+        if account[6]  == 1:
             return render_template('manager_dashboard.html')
         else:
             return render_employee_dashboard(account, cursor)
@@ -125,7 +125,7 @@ def authenticate_user():
             if session['restricted'] == 1:
                 msg = 'Account is restricted'
                 return ('Account is restricted')
-            if session['role'] == 1 or session['role'] == 2:
+            if session['role'] == 1:
                 #Admin
                 return render_template('manager_dashboard.html', msg=msg)
             else:
