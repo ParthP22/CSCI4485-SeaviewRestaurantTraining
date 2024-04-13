@@ -15,23 +15,99 @@ from matplotlib import pyplot as plt
 import database, smtplib, ssl, credentials, datetime
 from routes import website
 
+import csv
+
 
 # This is for after you submit a quiz
 def quiz_submission_report(user_id, attempt_id):
     cursor = database.conn.cursor()
-    cursor.execute('SELECT FIRST_NAME, LAST_NAME FROM USERS WHERE ID = ? ', (user_id,))
+    cursor.execute('SELECT e.FIRST_NAME, e.LAST_NAME, m.EMAIL '
+                   'FROM USERS e JOIN USERS m '
+                   'ON e.MANAGER_ID = m.ID '
+                   'WHERE e.ID = ? ', (user_id,))
     query = cursor.fetchone()
-    first_name, last_name = query[1], query[2]
+    first_name, last_name, manager_email = query[0], query[1], query[2]
 
-    cursor.execute('SELECT QUIZ_ID, QUESTION_ID, ANSWER, CORRECT '
-                   'FROM RESULTS '
+    cursor.execute('SELECT q.QUIZ_ID, q.QUIZ_NAME, ah.ATTEMPT_NUMBER '
+                   'FROM QUIZZES q JOIN ATTEMPT_HISTORY_LOG ah '
+                   'ON q.QUIZ_ID = ah.QUIZ_ID '
+                   'WHERE ah.ATTEMPT_ID = ? ', (attempt_id,))
+
+    query = cursor.fetchone()
+
+    quiz_id, quiz_name, attempt_num = query[0], query[1], query[2]
+
+    cursor.execute('SELECT r.QUESTION_ID, q.QUESTION, r.ANSWER, r.IS_CORRECT, q.CORRECT_ANSWER '
+                   'FROM RESULTS r JOIN QUESTIONS q '
+                   'ON r.QUESTION_ID = q.QUESTION_ID '
                    'WHERE ATTEMPT_ID = ? ', (attempt_id,))
 
-    pass
+    data = cursor.fetchall()
+
+    for i in range(len(data)):
+        if data[i][3] == 1:
+            data[i] = (data[i][0], data[i][1], data[i][2], "Yes", data[i][4])
+        else:
+            data[i] = (data[i][0], data[i][1], data[i][2], "No", data[i][4])
+
+    subject = f"{first_name} {last_name}'s Submission on Quiz {quiz_id}: {quiz_name} "
+    recipient_email = manager_email
+    body = f"""Attached to this email is a CSV file containing the results of {first_name} {last_name}'s submission on {quiz_name}.
+This is their attempt number on this quiz: {attempt_num}. 
+    """
+
+    filename = 'results.csv'
+
+    generate_csv(data=data, filename=filename)
+
+    send_submission_report(subject=subject, recipient_email=recipient_email, body=body, filename=filename)
 
 
-def send_quiz_report():
-    pass
+
+def generate_csv(data, filename):
+
+    header = ['QUESTION_ID','QUESTION','ANSWER','IS_CORRECT','CORRECT_ANSWER']
+
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(header)
+        writer.writerows(data)
+
+
+
+def send_submission_report(subject, recipient_email, body, filename):
+    port = 587
+    smtp_server = "smtp.office365.com"
+    sender_email = credentials.email
+    password = credentials.password
+
+    message = MIMEMultipart()
+    message['From'] = sender_email
+    message['To'] = recipient_email
+    message['Subject'] = subject
+
+    with open(filename, 'rb') as attachment_file:
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(attachment_file.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', 'attachment', filename=filename)
+        message.attach(part)
+
+    message.attach(MIMEText(body, 'plain'))
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP(smtp_server, port) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+        server.login(sender_email, password)
+        text = message.as_string()
+        server.sendmail(sender_email, recipient_email, text)
+
+    os.remove(filename)
+    print("Submission report with CSV sent successfully")
+
+
 
 
 # This is for the manager dashboard
