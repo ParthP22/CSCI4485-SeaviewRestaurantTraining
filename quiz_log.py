@@ -13,7 +13,7 @@ def quiz_log():
     sort_by = request.args.get('sort', 'CHANGE_ID')
     order = request.args.get('order', 'asc')
 
-    cursor.execute(f"SELECT log.CHANGE_ID, log.CHANGE_NUMBER, log.EMPLOYEE_ID, u.FIRST_NAME, u.LAST_NAME, q.QUIZ_ID, q.QUIZ_NAME, log.DATE_TIME, log.ACTION_TYPE "
+    cursor.execute(f"SELECT log.CHANGE_ID, log.EMPLOYEE_ID, u.FIRST_NAME, u.LAST_NAME, q.QUIZ_ID, q.QUIZ_NAME, log.DATE_TIME, log.ACTION_TYPE "
                    f"FROM QUIZ_HISTORY_LOG log, QUIZZES q, USERS u "
                    f"WHERE log.QUIZ_ID = q.QUIZ_ID AND log.EMPLOYEE_ID = u.ID "
                    f"ORDER BY {sort_by} {order}")

@@ -7,8 +7,10 @@
 <h1>Announcements</h1>
 
     <div class="container" style="padding: 20px; word-wrap: break-word;">
-        {% for subject,body,date in emails %}
+        {% for subject,body,date,sender_first_name,sender_last_name in emails %}
+
             <div>Date: {{date}}</div>
+            <div>From: {{sender_first_name}} {{sender_last_name}}</div>
             <div>Subject: {{subject}}</div>
             <br/>
             <div>Message: {{body}}</div>
