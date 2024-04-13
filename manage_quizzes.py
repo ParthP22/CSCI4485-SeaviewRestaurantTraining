@@ -125,7 +125,7 @@ def take_quiz_route():
 
 @website.route('/quiz_taking', methods=['GET', 'POST'])
 def quiz_taking():
-    if request.method == 'POST':
+    if request.method == 'POST' and session['id'] == 2:
         quiz_id = request.form.get('quiz_id')
 
         cursor = database.conn.cursor()
@@ -218,6 +218,7 @@ def quiz_taking():
 
 
 
+
         send_reports.quiz_submission_report(session['id'], latest_attempt_id + 1)
 
         database.conn.commit()
@@ -267,18 +268,18 @@ def quiz_editing():
             cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
             quizID = cursor.fetchone()[0]
 
-            cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
-                           (session['id'], quizID))
-            recent_change = cursor.fetchone()
-            curr_change = 1
-            if recent_change[0] is not None:
-                curr_change = recent_change[0] + 1
-            else:
-                curr_change = 1
+            # cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
+            #                (session['id'], quizID))
+            # recent_change = cursor.fetchone()
+            # curr_change = 1
+            # if recent_change[0] is not None:
+            #     curr_change = recent_change[0] + 1
+            # else:
+            #     curr_change = 1
 
             cursor.execute(
-                'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, CHANGE_NUMBER, DATE_TIME, ACTION_TYPE)'
-                'VALUES(?,?,?,?,?,?)', (None, session['id'], quizID, curr_change, datetime.datetime.now(), 'CREATE'))
+                'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, DATE_TIME, ACTION_TYPE)'
+                'VALUES(?,?,?,?,?)', (None, session['id'], quizID, datetime.datetime.now(), 'CREATE'))
 
             #Uploads questions into the database
             for question in questions:
@@ -319,19 +320,19 @@ def deleteQuiz_route(quiz_id):
     cursor = database.conn.cursor()
     cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
 
-    cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
-                   (session['id'], quiz_id))
-
-    recent_change = cursor.fetchone()
-    curr_change = 1
-    if recent_change[0] is not None:
-        curr_change = recent_change[0] + 1
-    else:
-        curr_change = 1
+    # cursor.execute("SELECT MAX(CHANGE_NUMBER) FROM QUIZ_HISTORY_LOG WHERE EMPLOYEE_ID=? AND QUIZ_ID=?",
+    #                (session['id'], quiz_id))
+    #
+    # recent_change = cursor.fetchone()
+    # curr_change = 1
+    # if recent_change[0] is not None:
+    #     curr_change = recent_change[0] + 1
+    # else:
+    #     curr_change = 1
 
     cursor.execute(
-        'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, CHANGE_NUMBER, DATE_TIME, ACTION_TYPE)'
-        'VALUES(?,?,?,?,?,?)', (None, session['id'], quiz_id, curr_change, datetime.datetime.now(), 'DELETE'))
+        'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, DATE_TIME, ACTION_TYPE)'
+        'VALUES(?,?,?,?,?)', (None, session['id'], quiz_id, datetime.datetime.now(), 'DELETE'))
 
     database.conn.commit()
 
@@ -341,6 +342,11 @@ def deleteQuiz_route(quiz_id):
 def editQuiz_route(quiz_id):
     cursor = database.conn.cursor()
     cursor.execute("UPDATE QUIZZES SET IS_DELETED = 1 WHERE QUIZ_ID=?", (quiz_id,))
+
+    cursor.execute(
+        'INSERT INTO QUIZ_HISTORY_LOG(CHANGE_ID, EMPLOYEE_ID, QUIZ_ID, DATE_TIME, ACTION_TYPE)'
+        'VALUES(?,?,?,?,?)', (None, session['id'], quiz_id, datetime.datetime.now(), 'DELETE'))
+
     database.conn.commit()
 
     return redirect(url_for('manage_quizzes'))
