@@ -19,7 +19,7 @@ from email.mime.image import MIMEImage
 
 @website.route('/manage_quizzes')
 def manage_quizzes():
-    if session['role'] == 1 or session['role'] == 2:
+    if session['role'] == 1:
         cursor = database.conn.cursor()
 
         current_datetime = datetime.datetime.now()
@@ -34,7 +34,7 @@ def manage_quizzes():
 #Routes quiz list to the quiz editor
 @website.route('/quiz_editor')
 def quiz_editor():
-    if session['role'] == 1 or session['role'] == 2:
+    if session['role'] == 1:
         quiz_id = request.args.get('quiz_id')
         quiz_name = request.args.get('quiz_name')
         quiz_desc = request.args.get('quiz_desc')
@@ -125,7 +125,7 @@ def take_quiz_route():
 
 @website.route('/quiz_taking', methods=['GET', 'POST'])
 def quiz_taking():
-    if request.method == 'POST' and session['id'] == 2:
+    if request.method == 'POST' and session['role'] == 2:
         quiz_id = request.form.get('quiz_id')
 
         cursor = database.conn.cursor()
@@ -230,7 +230,7 @@ def quiz_taking():
 
 @website.route('/quiz_editing', methods=['GET', 'POST'])
 def quiz_editing():
-    if session['role'] == 1 or session['role'] == 2:
+    if session['role'] == 1:
         count = 0
         file_data = None  # Define file_data variable outside the conditional block
         # Check if the quiz name, quiz description, and material name is inputted into their text boxes.
