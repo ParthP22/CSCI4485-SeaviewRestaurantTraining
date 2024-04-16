@@ -103,3 +103,21 @@ def restrict_account(item_id):
         value = 1
         cursor.execute("UPDATE Users SET IsRestricted = ? WHERE id = ?", (value, item_id,))
         conn.commit()
+
+@website.route('/edit_role/<int:item_id>', methods=['GET', 'POST'])
+def edit_role(item_id):
+    cursor = database.conn.cursor()
+    # If it's a POST request, update the role
+    if request.method == 'POST':
+        new_role_id = request.form.get('role')
+        cursor.execute("UPDATE Users SET ROLE_ID = ? WHERE ID = ?", (new_role_id, item_id))
+        database.conn.commit()
+        return redirect(url_for('manage_employee'))
+
+    # For a GET request, show the edit form with current role
+    cursor.execute('SELECT ROLE_ID FROM Users WHERE ID = ?', (item_id,))
+    current_role_id = cursor.fetchone()
+    cursor.execute('SELECT * FROM Roles')
+    roles = cursor.fetchall()
+    return render_template('edit_role.html', current_role_id=current_role_id, roles=roles, user_id=item_id)
+
