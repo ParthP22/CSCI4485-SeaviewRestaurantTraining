@@ -46,21 +46,22 @@ def announcements():
         if request.method == 'POST' and 'subject' in request.form and 'body' in request.form:
 
             subject = request.form['subject']
-            body = request.form['body']
+            mail_body = request.form['body']
+            db_body = request.form['body']
             closing = f"""
             
 - Sincerely,
 {first_name} {last_name}   
             """
 
-            send_mail(subject, body + closing.rjust(len(body)))
+            send_mail(subject, mail_body + closing.rjust(len(mail_body)))
             status = "Email sent successfully"
             cursor.execute('SELECT MAX(MESSAGE_ID) FROM ANNOUNCEMENTS')
             query = cursor.fetchone()
             curr_message_id = 0
             if query[0] is not None:
                 curr_message_id = query[0]
-            cursor.execute('INSERT INTO ANNOUNCEMENTS(MESSAGE_ID, SUBJECT, MESSAGE, DATE_TIME, EMPLOYEE_ID) VALUES (?, ?, ?, ?, ?)', (curr_message_id + 1,subject,body,datetime.datetime.now(),session['id']))
+            cursor.execute('INSERT INTO ANNOUNCEMENTS(MESSAGE_ID, SUBJECT, MESSAGE, DATE_TIME, EMPLOYEE_ID) VALUES (?, ?, ?, ?, ?)', (curr_message_id + 1,subject,db_body,datetime.datetime.now(),session['id']))
             database.conn.commit()
             # return redirect(url_for('announcements'))
             return render_template('announcements.html', status=status)

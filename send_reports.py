@@ -44,11 +44,31 @@ def quiz_submission_report(user_id, attempt_id):
 
     data = cursor.fetchall()
 
+
+
     for i in range(len(data)):
         if data[i][3] == 1:
             data[i] = (data[i][0], data[i][1], data[i][2], "Yes", data[i][4])
         else:
             data[i] = (data[i][0], data[i][1], data[i][2], "No", data[i][4])
+
+
+        db_correct_answer = data[i][4][-1]
+        db_answer_choice = data[i][2][-1]
+
+        cursor.execute('SELECT ANSWER_A, ANSWER_B, ANSWER_C, ANSWER_D '
+                       'FROM QUESTIONS '
+                       'WHERE QUESTION_ID = ? ', (data[i][0],))
+        query = cursor.fetchone()
+
+        choices = {'A' : query[0], 'B' : query[1], 'C' : query[2], 'D' : query[3]}
+        correct_answer = choices[db_correct_answer]
+        answer_choice = choices[db_answer_choice]
+
+        if answer_choice is not None and correct_answer is not None:
+            data[i] = (data[i][0], data[i][1], answer_choice, data[i][3], correct_answer)
+
+
 
     subject = f"{first_name} {last_name}'s Submission on Quiz {quiz_id}: {quiz_name} "
     recipient_email = manager_email
