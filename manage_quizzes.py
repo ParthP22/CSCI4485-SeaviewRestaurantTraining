@@ -223,6 +223,9 @@ def quiz_taking():
 
         database.conn.commit()
 
+
+
+
     # This redirects to the employee dashboard, I tried putting dashboard and it wouldn't let me so I did this.
     # Later this will redirect to another page where it'll display the score you got, if you get less than 100,
     # It will just contain a retry button, and if you get 100, there will be another button for returning to dashboard.
