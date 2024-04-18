@@ -11,7 +11,7 @@ from routes import website
 # This one is used for the announcements function
 def send_mail(subject, body):
     cursor = database.conn.cursor()
-    cursor.execute('SELECT Email FROM Users WHERE ID >= 1 AND ID <= 4')
+    cursor.execute('SELECT DISTINCT Email FROM Users ')
     receiver_emails = cursor.fetchall()
     port = 587
     smtp_server = "smtp.office365.com"
