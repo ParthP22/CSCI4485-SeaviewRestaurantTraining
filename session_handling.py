@@ -4,6 +4,8 @@
 
 
 from flask import Flask, render_template, redirect, url_for, session, request
+
+import certifcate
 import database
 import datetime
 from routes import website
@@ -138,6 +140,12 @@ def authenticate_user():
         if account and account[6] == 1:
             return render_template('manager_dashboard.html')
         else:
+            print("Back to dashboard")
+            cursor.execute('SELECT IS_COMPLETED FROM USERS WHERE ID=? ', (session['id'],))
+            query = cursor.fetchone()
+            is_completed = query[0]
+            if is_completed == 0:
+                certifcate.generate_certificate()
             return render_employee_dashboard(account, cursor)
 
     # Show the login form with message (if any)
