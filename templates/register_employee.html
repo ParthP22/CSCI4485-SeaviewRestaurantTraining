@@ -102,96 +102,43 @@ body {
 </style>
 </head>
 <body>
-<!--<div class="container">-->
-<!--    <div class="row justify-content-center mt-5">-->
-<!--        <div class="col-md-4">-->
-<div class="signup-form text-center">
-    <h2>Register</h2>
-</div>
-<div class="" style="display: flex; justify-content: center; align-items: center; height: 50vh;">
-    <div class="row justify-content-md-center" id="form_choice" style="align-content: center">
-<!--        <div class="btn btn-primary btn-lg btn-block"><button id="employee_button" class="btn btn-primary btn-lg btn-block">Employee</button></div>-->
-<!--        <div class="btn btn-primary btn-lg btn-block"><button id="manager_button" class="btn btn-primary btn-lg btn-block">Manager</button></div>-->
-<!--        <div>Click the button for which type of account you would like to create</div>-->
-        <div id="employee_button" class="btn btn-primary btn-lg btn-block" role_id="2">Employee</div>
-        <div id="manager_button" class="btn btn-primary btn-lg btn-block" role_id="1">Manager</div>
+<div class="signup-form">
+    <form action="{{ url_for('registration') }}" method="POST">
+		<h2>Register</h2>
 
-    </div>
-    <form id="registration_form" action="{{ url_for('registration') }}" method="POST" style="display: none;" novalidate>
-<!--        <input type="hidden" name="role_id" id="role_id_choice">-->
-        <div class="form-group" id="employee_form" style="display: none;">
-            <input type="text" class="form-control" name="e_first_name" placeholder="First Name" required="required">
-            <input type="text" class="form-control" name="e_last_name" placeholder="Last Name" required="required">
-            <input type="email" class="form-control" name="e_email" placeholder="Email" required="required">
-            <input type="username" class="form-control" name="e_username" placeholder="Username" required="required">
-            <input type="password" class="form-control" name="e_password" placeholder="Password" required="required">
-            <input type="password" class="form-control" name="e_confirm_password" placeholder="Confirm Password" required="required">
+        <div class="form-group">
+			<div class="row">
+				<div class="col"><input type="text" class="form-control" name="first_name" placeholder="First Name" required="required"></div>
+				<div class="col"><input type="text" class="form-control" name="last_name" placeholder="Last Name" required="required"></div>
+			</div>
+        </div>
 
-            <select name="e_manager" class="dropdown" style="width: 390px; height: 30px" required="required">
-                <option value="0" selected>Select Manager</option>
-                {% for manager in managers %}
-                    <option value="{{ manager[0] }}">{{ manager[1] }} {{manager[2]}}</option>
+        <div class="form-group">
+        	<input type="email" class="form-control" name="email" placeholder="Email" required="required">
+        </div>
+         <div class="form-group">
+        	<input type="username" class="form-control" name="username" placeholder="Username" required="required">
+        </div>
+		<div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Password" required="required">
+        </div>
+		<div class="form-group">
+            <input type="password" class="form-control" name="confirm_password" placeholder="Confirm Password" required="required">
+        </div>
+        <div class="form-group">
+            <select name="role" class="dropdown" style="width: 390px; height: 30px">
+                <option value="0" selected>Select Role</option>
+                {% for role in roles %}
+                    <option value="{{ role[0] }}">{{ role[1] }}</option>
                 {% endfor %}
             </select>
         </div>
-        <div class="form-group" id="manager_form" style="display: none;">
-            <input type="text" class="form-control" name="m_first_name" placeholder="First Name" required="required">
-            <input type="text" class="form-control" name="m_last_name" placeholder="Last Name" required="required">
-            <input type="email" class="form-control" name="m_email" placeholder="Email" required="required">
-            <input type="username" class="form-control" name="m_username" placeholder="Username" required="required">
-            <input type="password" class="form-control" name="m_password" placeholder="Password" required="required">
-            <input type="password" class="form-control" name="m_confirm_password" placeholder="Confirm Password" required="required">
+		<div class="form-group">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Register Now</button>
         </div>
-        <button type="submit" id="submit_button" class="btn btn-primary btn-lg btn-block" style="display: none">Register Now</button>
+
     </form>
+
 </div>
-
-<script>
-        document.getElementById('employee_button').addEventListener('click', function() {
-            document.getElementById('registration_form').style.display = 'block';
-            // Display the employee form
-            document.getElementById('employee_form').style.display = 'block';
-            // Hide the manager form
-            document.getElementById('manager_form').style.display = 'none';
-            // Hide the form choice
-            document.getElementById('form_choice').style.display = 'none';
-            // Display the submit button
-            document.getElementById('submit_button').style.display = 'block';
-
-            // Clear input fields
-            document.getElementById('e_first_name').value = '';
-            document.getElementById('e_last_name').value = '';
-            document.getElementById('e_email').value = '';
-            document.getElementById('e_username').value = '';
-            document.getElementById('e_password').value = '';
-            document.getElementById('e_confirm_password').value = '';
-            document.getElementById('e_manager').value = '0'; // Assuming '0' is the default value
-        });
-
-        document.getElementById('manager_button').addEventListener('click', function() {
-            // Display the form
-            document.getElementById('registration_form').style.display = 'block';
-            // Display the manager form
-            document.getElementById('manager_form').style.display = 'block';
-            // Hide the employee form
-            document.getElementById('employee_form').style.display = 'none';
-            // Hide the form choice
-            document.getElementById('form_choice').style.display = 'none';
-            // Display the submit button
-            document.getElementById('submit_button').style.display = 'block';
-
-            // Clear input fields
-            document.getElementById('m_first_name').value = '';
-            document.getElementById('m_last_name').value = '';
-            document.getElementById('m_email').value = '';
-            document.getElementById('m_username').value = '';
-            document.getElementById('m_password').value = '';
-            document.getElementById('m_confirm_password').value = '';
-        });
-        // document.getElementById('submit_button').addEventListener('click', function() {
-        //     document.getElementById('registration_form').reset();
-        // });
-
-    </script>
 </body>
 </html>

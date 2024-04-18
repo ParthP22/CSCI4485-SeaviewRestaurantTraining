@@ -28,7 +28,7 @@ def register_employee():
     managers = cursor.fetchall()
     print(managers)
 
-    return render_template('register_employee.html', managers=managers)
+    return render_template('register_employee.html', roles=roles, managers=managers)
 
 @website.route('/manage_employee')
 def manage_employee():
@@ -47,61 +47,17 @@ def manage_employee():
 def registration():
     msg = ''
     # Check if "username", "password" and "email" POST requests exist (user submitted form)
-    if request.method == 'POST' and 'e_username' in request.form and 'e_password' in request.form and 'e_email' in request.form\
-    and 'e_first_name' in request.form and 'e_last_name' in request.form\
-    and 'e_confirm_password' in request.form and 'e_manager' in request.form:
-        # 'manager' in request.form and request.form['manager'] != '0'
-            # Create variables for easy access
-            first_name = request.form['e_first_name']
-            last_name = request.form['e_last_name']
-            username = request.form['e_username']
-            password = request.form['e_password']
-            confirm_pass = request.form['e_confirm_password']
-            email = request.form['e_email']
-            manager_id = request.form['e_manager']
-            isRestricted = 0
-            if manager_id == '0':
-                manager_id = None
-            cursor = database.conn.cursor()
-            cursor.execute('SELECT * FROM Users WHERE Username=?', (username,))
-            account = cursor.fetchone()
-            # If account exists show error and validation checks
-            if account:
-                msg = 'Account already exists!'
-            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-                print("employee")
-                print(str(email))
-                msg = 'Invalid email address!'
-            elif not re.match(r'[A-Za-z0-9]+', username):
-                msg = 'Username must contain only characters and numbers!'
-            elif not username or not password or not email or not manager_id:
-                msg = 'Please fill out the form!'
-            elif password != confirm_pass:
-                msg = 'Passwords do not match!'
-            else:
-                # Account doesnt exists and the form data is valid, now insert new account into accounts table
-                cursor.execute(
-                    'INSERT INTO Users (username, first_name, last_name, password, email, role_id, IsRestricted, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                    (username, first_name, last_name, password, email, 2, isRestricted, manager_id))
-                database.conn.commit()
-                msg = 'You have successfully registered!'
-
-                cursor.execute(
-                    'SELECT u.ID, u.USERNAME, u.FIRST_NAME || \' \' || u.LAST_NAME, u.EMAIL, r.ROLE_NAME, u.MANAGER_ID, m.FIRST_NAME || \' \' || m.LAST_NAME '
-                    'FROM Users u JOIN Roles r ON u.ROLE_ID = r.ID LEFT JOIN Users m  ON u.MANAGER_ID = m.ID')
-                users = cursor.fetchall()
-
-                return render_template('manage_employee.html', users=users)
-    elif request.method == 'POST' and 'm_username' in request.form and 'm_password' in request.form and 'm_email' in request.form\
-    and 'm_first_name' in request.form and 'm_last_name' in request.form\
-    and 'm_confirm_password' in request.form:
-        first_name = request.form['m_first_name']
-        last_name = request.form['m_last_name']
-        username = request.form['m_username']
-        password = request.form['m_password']
-        confirm_pass = request.form['m_confirm_password']
-        email = request.form['m_email']
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form\
+    and 'first_name' in request.form and 'last_name' in request.form:
+        # Create variables for easy access
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        role_id = request.form.get('role')
         isRestricted = 0
+
         cursor = database.conn.cursor()
         cursor.execute('SELECT * FROM Users WHERE Username=?', (username,))
         account = cursor.fetchone()
@@ -112,15 +68,12 @@ def registration():
             msg = 'Invalid email address!'
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'Username must contain only characters and numbers!'
-        elif not username or not password or not email:
+        elif not username or not password or not email or role_id == '0':
             msg = 'Please fill out the form!'
-        elif password != confirm_pass:
-            msg = 'Passwords do not match!'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cursor.execute(
-                'INSERT INTO Users (username, first_name, last_name, password, email, role_id, IsRestricted, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-                (username, first_name, last_name, password, email, 1, isRestricted, None))
+            cursor.execute('INSERT INTO Users (username, first_name, last_name, password, email, role_id, IsRestricted) VALUES ( ?, ?, ?, ?, ?, ?, ?)',
+                           (username, first_name, last_name, password, email, role_id, isRestricted))
             database.conn.commit()
             msg = 'You have successfully registered!'
 
@@ -128,19 +81,16 @@ def registration():
                 'SELECT u.ID, u.USERNAME, u.FIRST_NAME || \' \' || u.LAST_NAME, u.EMAIL, r.ROLE_NAME, u.MANAGER_ID, m.FIRST_NAME || \' \' || m.LAST_NAME '
                 'FROM Users u JOIN Roles r ON u.ROLE_ID = r.ID LEFT JOIN Users m  ON u.MANAGER_ID = m.ID')
             users = cursor.fetchall()
-
             return render_template('manage_employee.html', users=users)
+
+
     elif request.method == 'POST':
         # Form is empty... (no POST data)
         msg = 'Please fill out the form!'
     # Show registration form with message (if any)
-    print(msg)
-    cursor = database.conn.cursor()
-    cursor.execute('SELECT ID, FIRST_NAME, LAST_NAME '
-                   'FROM USERS '
-                   'WHERE ROLE_ID = 1 ')
-    managers = cursor.fetchall()
-    return render_template('register_employee.html', msg=msg, managers=managers)
+    cursor.execute('SELECT * FROM Roles ')
+    roles = cursor.fetchall()
+    return render_template('register_employee.html', roles=roles, msg=msg)
 
 def delete_item(item_id):
     cursor = database.conn.cursor()
@@ -177,10 +127,11 @@ def edit_employee(item_id):
 
         database.conn.commit()
         print(new_role_id)
-        if new_role_id == '1':
-            return redirect(url_for('manage_employee'))
-        else:
+        if new_role_id == '2' and item_id == session['id']:
             return redirect(url_for('authenticate_user'))
+
+        else:
+            return redirect(url_for('manage_employee'))
 
     # For a GET request, show the edit form with current role
     cursor.execute('SELECT DISTINCT u.ROLE_ID, r.ROLE_NAME '

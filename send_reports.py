@@ -26,6 +26,9 @@ def quiz_submission_report(user_id, attempt_id):
                    'ON e.MANAGER_ID = m.ID '
                    'WHERE e.ID = ? ', (user_id,))
     query = cursor.fetchone()
+    print(query)
+    if query is None or query[0] is None or query[1] is None or query[2] is None:
+        return
     first_name, last_name, manager_email = query[0], query[1], query[2]
 
     cursor.execute('SELECT q.QUIZ_ID, q.QUIZ_NAME, ah.ATTEMPT_NUMBER '

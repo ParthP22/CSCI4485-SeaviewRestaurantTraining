@@ -141,7 +141,11 @@ def authenticate_user():
             return render_template('manager_dashboard.html')
         else:
             print("Back to dashboard")
-            # certifcate.generate_certificate()
+            cursor.execute('SELECT IS_COMPLETED FROM USERS WHERE ID=? ', (session['id'],))
+            query = cursor.fetchone()
+            is_completed = query[0]
+            if is_completed == 0:
+                certifcate.generate_certificate()
             return render_employee_dashboard(account, cursor)
 
     # Show the login form with message (if any)

@@ -266,7 +266,7 @@ def quiz_editing():
             if quiz_id != "None":
                 cursor.execute('UPDATE QUIZZES SET IS_DELETED=1 WHERE QUIZ_ID=?', (int(quiz_id),))
             cursor.execute('INSERT INTO QUIZZES (QUIZ_NAME, TOTAL_QUESTIONS, TOTAL_CORRECT, TOTAL_INCORRECT, IS_VISIBLE, QUIZ_DESC, IS_DELETED, DUE_DATE) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (quiz_name, count, 0, 0, is_visible, quiz_desc, 0, due_date))
-
+            cursor.execute('UPDATE USERS SET IS_COMPLETED=0 ')
             #Gets the ID from the quiz that was just created to upload that into the questions that are created.
             cursor.execute('SELECT MAX(QUIZ_ID) FROM QUIZZES')
             quizID = cursor.fetchone()[0]
