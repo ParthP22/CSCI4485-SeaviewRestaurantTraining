@@ -16,31 +16,34 @@ from routes import website
 
 @website.route('/register_employee')
 def register_employee():
+    if session['role'] == 1:
+        cursor = database.conn.cursor()
 
-    cursor = database.conn.cursor()
+        cursor.execute('SELECT * FROM Roles ')
+        roles = cursor.fetchall()
 
-    cursor.execute('SELECT * FROM Roles ')
-    roles = cursor.fetchall()
+        cursor.execute('SELECT ID, FIRST_NAME, LAST_NAME '
+                       'FROM USERS '
+                       'WHERE ROLE_ID = 1 ')
+        managers = cursor.fetchall()
+        print(managers)
 
-    cursor.execute('SELECT ID, FIRST_NAME, LAST_NAME '
-                   'FROM USERS '
-                   'WHERE ROLE_ID = 1 ')
-    managers = cursor.fetchall()
-    print(managers)
-
-    return render_template('register_employee.html', roles=roles, managers=managers)
+        return render_template('register_employee.html', roles=roles, managers=managers)
+    else:
+        return render_template('prohibited.html')
 
 @website.route('/manage_employee')
 def manage_employee():
-    cursor = database.conn.cursor()
+    if session['role'] == 1:
+        cursor = database.conn.cursor()
 
-    cursor.execute('SELECT u.ID, u.USERNAME, u.FIRST_NAME || \' \' || u.LAST_NAME, u.EMAIL, r.ROLE_NAME, u.MANAGER_ID, m.FIRST_NAME || \' \' || m.LAST_NAME '
-                   'FROM Users u JOIN Roles r ON u.ROLE_ID = r.ID LEFT JOIN Users m  ON u.MANAGER_ID = m.ID')
-    users = cursor.fetchall()
+        cursor.execute('SELECT u.ID, u.USERNAME, u.FIRST_NAME || \' \' || u.LAST_NAME, u.EMAIL, r.ROLE_NAME, u.MANAGER_ID, m.FIRST_NAME || \' \' || m.LAST_NAME '
+                       'FROM Users u JOIN Roles r ON u.ROLE_ID = r.ID LEFT JOIN Users m  ON u.MANAGER_ID = m.ID')
+        users = cursor.fetchall()
 
-
-
-    return render_template('manage_employee.html', users = users)
+        return render_template('manage_employee.html', users = users)
+    else:
+        return render_template('prohibited.html')
 
 
 @website.route('/registration', methods=['GET', 'POST'])
