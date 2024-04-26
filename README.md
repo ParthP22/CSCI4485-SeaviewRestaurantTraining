@@ -13,7 +13,7 @@ Required Downloads:
 
 To run this project, a "credentials.py" file is required. This file contains the email address and its password that will be used in order to send announcements from the manager's dashboard.
 
-Team Members and General Contributions
+**Team Members and General Contributions**
 
 Parth Patel (ParthP22):
 - Team Leader
