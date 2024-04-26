@@ -1,7 +1,10 @@
 # CSCI4485-SeaviewRestaurantTraining
 Our team developed a training website for the employees of Seaview Golf Club's restaurant using the Flask framework in Python. 
+
 This website contains an employee dashboard, where employees can take their assigned quizzes.
+
 In addition, a manager dashboard has also been implemented and consists of various features, such as being able to create/edit/delete accounts, create quizzes, view quiz trends, and more.
+
 
 Required Downloads:
 - Flask
