@@ -13,6 +13,8 @@ Required Downloads:
 
 To run this project, a "credentials.py" file is required. This file contains the email address and its password that will be used in order to send announcements from the manager's dashboard.
 
+We have deployed the website using Python Anywhere, and it can be accessed here: https://seaviewtraining.pythonanywhere.com/
+
 **Team Members and General Contributions**
 
 Parth Patel (ParthP22):
