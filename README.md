@@ -30,6 +30,7 @@ Ahmed Malik (AhmedM13):
 
 Pranjal Singh (pranjal0416):
 - Regularly communicated with our client
+- Created login system
 - Developed the managers' dashboard
 
 Ryan Minneo (Minneo03):
@@ -37,14 +38,10 @@ Ryan Minneo (Minneo03):
 - Implemented auxiliary functions, such as forward/backward arrows
 - Implemented functionality to upload PDFs for quizzes
 
-Ryan Nguygen (nguyenryan113):
+Ryan Nguyen (nguyenryan113):
 - Team Secretary
 - Recorded minutes and summary of each group meeting
 - Developed quiz taking/creating/editing/deleting functionalities
 - Implemented functionality to upload PDFs for quizzes
 
 **Ryan Nguyen and Ryan Minneo utilized pair programming strategies to complete their portion of this project.
-
-
-
-
