@@ -1,4 +1,11 @@
-# CSCI4485-SeaviewRestaurantTraining
+# <p align="center">CSCI4485-SeaviewRestaurantTraining</p>
+
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Minneo03/CSCI4485-SeaviewRestaurantTraining/refs/heads/main/static/images/SeaviewLogo.webp" alt="Description" width="300">
+</p>
+
+
 Our team developed a training website for the employees of Seaview Golf Club's restaurant using the Flask framework in Python. 
 
 This website contains an employee dashboard, where employees can take their assigned quizzes.
