@@ -1,4 +1,4 @@
-# <p align="center">CSCI4485-SeaviewRestaurantTraining</p>
+# <p align="center">Seaview Restaurant Training Website</p>
 
 
 <p align="center">
